@@ -302,8 +302,9 @@ function atualizarDestaquesColuna(idColuna, limite, classeDestaque) {
     }
   });
 
-  console.log(`[Atualização local] Coluna ${idColuna}: ${count} botões destacados até senha ${limite}`);
+  console.log(`[Atualização local] ${idColuna}: ${count} botões destacados até ${limite}`);
 }
+
 
 
 
@@ -326,10 +327,7 @@ function iniciarOuvinteAtualizacoesSenhas() {
         atualizarDestaquesColuna(colunaSincronizadaID, limite, classeDestaque);
       }
 
-      console.log(`[Listener] Atualizado ${idColuna} até senha ${limite}, classe ${classeDestaque}`);
-      if (colunaSincronizadaID) {
-        console.log(`[Listener] Também atualizou sincronizada: ${colunaSincronizadaID}`);
-      }
+      console.log(`[Listener] Atualizou ${idColuna} e sincronizada (se existir).`);
     }
   });
 }
@@ -497,33 +495,17 @@ async function chamarSenhaSincronizada(tipo, guiche) {
   let contador = snapshot.exists() ? snapshot.val() : 0;
   contador += 1;
 
-  await ref.set(contador);  // Aguarda garantir que contador foi salvo
-  console.log(`[chamarSenhaSincronizada] Contador ${tipo}: ${contador} salvo no Firebase.`);
+  await ref.set(contador);
+  console.log(`[chamarSenhaSincronizada] Contador ${tipo}: ${contador}`);
 
   const idColuna = tipo === 'normal'
     ? (guiche === 1 ? 'coluna-normal-guiche1' : 'coluna-normal-guiche2')
     : (guiche === 1 ? 'coluna-preferencial-guiche1' : 'coluna-preferencial-guiche2');
 
-  const coluna = document.getElementById(idColuna);
-  const botoes = Array.from(coluna.querySelectorAll('button'));
-  const botao = botoes.find(b => b.textContent.includes(`Senha ${contador} -`));
-
-  if (botao) {
-    botao.click();
-  } else {
-    console.error(`[chamarSenhaSincronizada] Botão não encontrado: Senha ${contador} - Guichê ${guiche}`);
-  }
-
-  // Força atualização local após chamada (ver passo 3)
-  const isPreferencial = tipo === 'preferencial';
-  const classeDestaque = isPreferencial ? 'botao-destacado-preferencial' : 'botao-destacado-normal';
-  atualizarDestaquesColuna(idColuna, contador, classeDestaque);
-
-  const colunaSincronizadaID = obterColunaSincronizada(idColuna);
-  if (colunaSincronizadaID) {
-    atualizarDestaquesColuna(colunaSincronizadaID, contador, classeDestaque);
-  }
+  // Processa sem usar click
+  processarSenha(tipo, idColuna, contador);
 }
+
 
 let bloqueioTeclado = false;
 
@@ -609,3 +591,31 @@ function esperarSegundoKey(tipo) {
   document.addEventListener('keydown', segundaLetra);
 }
    
+function processarSenha(tipo, idColuna, numeroSenha) {
+  const isPreferencial = tipo === 'preferencial';
+  const classeDestaque = isPreferencial ? 'botao-destacado-preferencial' : 'botao-destacado-normal';
+
+  const coluna = document.getElementById(idColuna);
+  if (!coluna) return;
+
+  const botao = Array.from(coluna.querySelectorAll('button')).find(b => b.textContent.includes(`Senha ${numeroSenha} -`));
+  if (!botao) return;
+
+  const destino = botao.textContent.split(" - ")[1];
+  const textoFalado = isPreferencial
+    ? `Senha ${numeroSenha}, preferencial, ${destino}`
+    : `Senha ${numeroSenha}, normal, ${destino}`;
+
+  falar(textoFalado);
+
+  // Atualiza local
+  atualizarUltimaSenhaNormal(botao.textContent);
+  if (isPreferencial) {
+    atualizarUltimaSenhaPreferencial(botao.textContent);
+  } else {
+    atualizarUltimaSenhaNormal(botao.textContent);
+  }
+
+  // Salva maior no Firebase
+  salvarMaiorSenhaFirebase(idColuna, numeroSenha);
+}
