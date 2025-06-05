@@ -9,6 +9,10 @@ function salvarMaiorSenhaFirebase(idColuna, numeroSenha) {
   firebase.database().ref('maioresSenhasPorColuna/' + idColuna).set(numeroSenha);
 }
 
+function salvarUltimaSenhaFirebase(idColuna, numeroSenha) {
+    firebase.database().ref('ultimasSenhas/' + idColuna).set(numeroSenha);
+}
+
 async function atualizarContadorFirebaseSeMaior(tipo, numero) {
   const ref = firebase.database().ref(tipo === 'normal' ? 'contadorNormal' : 'contadorPreferencial');
   const snapshot = await ref.get();
@@ -179,6 +183,14 @@ function criarBotao(idColuna, texto, classe) {
     : `Senha ${numeroSenha}, normal, ${destino}`;
 
   botao.onclick = () => {
+	  
+	  salvarUltimaSenhaFirebase(idColuna, numeroSenha);
+
+    const colunaSincronizadaID = obterColunaSincronizada(idColuna);
+    if (colunaSincronizadaID) {
+        salvarUltimaSenhaFirebase(colunaSincronizadaID, numeroSenha);
+    }
+	
     falar(textoFalado);
 
     const agora = new Date();
@@ -245,6 +257,7 @@ function criarBotao(idColuna, texto, classe) {
 
     botao.scrollIntoView({ behavior: 'smooth', block: 'center' });
     ultimaSenhaChamada = botao;
+
   };
 
   coluna.appendChild(botao);
@@ -391,6 +404,39 @@ document.addEventListener("DOMContentLoaded", async function () {
   } else {
     await restaurarEstadoSenhasFirebase();
   }
+  
+  const colunas = [
+    'coluna-normal-guiche1',
+    'coluna-normal-guiche2',
+    'coluna-preferencial-guiche1',
+    'coluna-preferencial-guiche2'
+];
+
+colunas.forEach(idColuna => {
+    firebase.database().ref('ultimasSenhas/' + idColuna).on('value', snapshot => {
+        const numeroSenha = snapshot.val();
+        if (!numeroSenha) return;
+
+        const coluna = document.getElementById(idColuna);
+        if (!coluna) return;
+
+        const botoes = Array.from(coluna.querySelectorAll('button'));
+        
+        botoes.forEach(btn => {
+            btn.classList.remove('botao-destacado-normal', 'botao-destacado-preferencial');
+            const match = btn.textContent.match(/Senha (\d+)/);
+            if (match) {
+                const num = parseInt(match[1], 10);
+                if (num === numeroSenha) {
+                    const isPreferencial = idColuna.includes("preferencial");
+                    btn.classList.add(isPreferencial ? 'botao-destacado-preferencial' : 'botao-destacado-normal');
+                    btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+    });
+});
+
 });
 
 function forcarSelecaoGuiche() {
@@ -445,6 +491,15 @@ async function chamarSenhaSincronizada(tipo, guiche) {
   const botao = botoes.find(b => b.textContent.includes(`Senha ${contador} -`));
 
   if (botao) {
+
+	  // ✅ Grava a última senha no Firebase antes de clicar
+    salvarUltimaSenhaFirebase(idColuna, contador);
+
+    const colunaSincronizadaID = obterColunaSincronizada(idColuna);
+    if (colunaSincronizadaID) {
+      salvarUltimaSenhaFirebase(colunaSincronizadaID, contador);
+    }
+	
     botao.click();
   } else {
     console.error('Botão não encontrado:', `Senha ${contador} - Guichê ${guiche}`);
