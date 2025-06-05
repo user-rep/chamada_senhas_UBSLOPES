@@ -6,7 +6,10 @@ const contadorLocal = {
 };
 
 function salvarMaiorSenhaFirebase(idColuna, numeroSenha) {
-  firebase.database().ref('maioresSenhasPorColuna/' + idColuna).set(numeroSenha);
+  firebase.database().ref('maioresSenhasPorColuna/' + idColuna).set(numeroSenha)
+    .then(() => {
+      console.log(`[Firebase] maioresSenhasPorColuna[${idColuna}] atualizado para ${numeroSenha}`);
+    });
 }
 
 async function atualizarContadorFirebaseSeMaior(tipo, numero) {
@@ -279,26 +282,29 @@ async function restaurarEstadoSenhasFirebase() {
 
 function atualizarDestaquesColuna(idColuna, limite, classeDestaque) {
   const coluna = document.getElementById(idColuna);
-  if (coluna) {
-    const botoes = Array.from(coluna.querySelectorAll('button'));
+  if (!coluna) return;
 
-    // Remove destaques antigos
-    botoes.forEach(btn => {
-      btn.classList.remove('botao-destacado-normal', 'botao-destacado-preferencial');
-    });
+  const botoes = Array.from(coluna.querySelectorAll('button'));
 
-    // Aplica novos destaques
-    botoes.forEach(btn => {
-      const match = btn.textContent.match(/Senha (\d+)/);
-      if (match) {
-        const num = parseInt(match[1], 10);
-        if (num <= limite) {
-          btn.classList.add(classeDestaque);
-        }
+  botoes.forEach(btn => {
+    btn.classList.remove('botao-destacado-normal', 'botao-destacado-preferencial');
+  });
+
+  let count = 0;
+  botoes.forEach(btn => {
+    const match = btn.textContent.match(/Senha (\d+)/);
+    if (match) {
+      const num = parseInt(match[1], 10);
+      if (num <= limite) {
+        btn.classList.add(classeDestaque);
+        count++;
       }
-    });
-  }
+    }
+  });
+
+  console.log(`[Atualização local] Coluna ${idColuna}: ${count} botões destacados até senha ${limite}`);
 }
+
 
 
 function iniciarOuvinteAtualizacoesSenhas() {
@@ -306,22 +312,28 @@ function iniciarOuvinteAtualizacoesSenhas() {
     const estado = snapshot.val();
     if (!estado) return;
 
+    console.log(`[Listener] maioresSenhasPorColuna atualizado:`, estado);
+
     for (let idColuna in estado) {
       const limite = estado[idColuna];
       const isPreferencial = idColuna.includes("preferencial");
       const classeDestaque = isPreferencial ? 'botao-destacado-preferencial' : 'botao-destacado-normal';
 
-      // Atualiza a coluna original
       atualizarDestaquesColuna(idColuna, limite, classeDestaque);
 
-      // Atualiza a coluna sincronizada
       const colunaSincronizadaID = obterColunaSincronizada(idColuna);
       if (colunaSincronizadaID) {
         atualizarDestaquesColuna(colunaSincronizadaID, limite, classeDestaque);
       }
+
+      console.log(`[Listener] Atualizado ${idColuna} até senha ${limite}, classe ${classeDestaque}`);
+      if (colunaSincronizadaID) {
+        console.log(`[Listener] Também atualizou sincronizada: ${colunaSincronizadaID}`);
+      }
     }
   });
 }
+
 
 
 
@@ -484,7 +496,9 @@ async function chamarSenhaSincronizada(tipo, guiche) {
   const snapshot = await ref.get();
   let contador = snapshot.exists() ? snapshot.val() : 0;
   contador += 1;
-  await ref.set(contador);
+
+  await ref.set(contador);  // Aguarda garantir que contador foi salvo
+  console.log(`[chamarSenhaSincronizada] Contador ${tipo}: ${contador} salvo no Firebase.`);
 
   const idColuna = tipo === 'normal'
     ? (guiche === 1 ? 'coluna-normal-guiche1' : 'coluna-normal-guiche2')
@@ -497,8 +511,49 @@ async function chamarSenhaSincronizada(tipo, guiche) {
   if (botao) {
     botao.click();
   } else {
-    console.error('Botão não encontrado:', `Senha ${contador} - Guichê ${guiche}`);
+    console.error(`[chamarSenhaSincronizada] Botão não encontrado: Senha ${contador} - Guichê ${guiche}`);
   }
+
+  // Força atualização local após chamada (ver passo 3)
+  const isPreferencial = tipo === 'preferencial';
+  const classeDestaque = isPreferencial ? 'botao-destacado-preferencial' : 'botao-destacado-normal';
+  atualizarDestaquesColuna(idColuna, contador, classeDestaque);
+
+  const colunaSincronizadaID = obterColunaSincronizada(idColuna);
+  if (colunaSincronizadaID) {
+    atualizarDestaquesColuna(colunaSincronizadaID, contador, classeDestaque);
+  }
+}
+
+let bloqueioTeclado = false;
+
+document.addEventListener("keydown", function (event) {
+  if (bloqueioTeclado) return;  // Bloqueia múltiplas chamadas rápidas
+
+  const tecla = event.key.toLowerCase();
+  const inputNome = document.getElementById("nomePessoa");
+
+  if (document.activeElement === inputNome) {
+    return;
+  }
+
+  if (tecla === 'r') {
+    repetirUltimaSenha();
+    bloquearTecladoTemporariamente();
+  } else if (tecla === 'n') {
+    esperarSegundoKey('n');
+    bloquearTecladoTemporariamente();
+  } else if (tecla === 'p') {
+    esperarSegundoKey('p');
+    bloquearTecladoTemporariamente();
+  }
+});
+
+function bloquearTecladoTemporariamente() {
+  bloqueioTeclado = true;
+  setTimeout(() => {
+    bloqueioTeclado = false;
+  }, 500);  // Bloqueia por 500ms
 }
 
 function chamarSenhaLocal(tipo) {
