@@ -332,7 +332,12 @@ botao.onclick = () => {
   }
 
   // 🎯 Scroll apenas na senha clicada (não afeta os hovers)
-  botao.scrollIntoView({ behavior: 'smooth', block: 'center' });
+ if (!maioresSenhasPorColuna[idColuna] || numeroSenha >= maioresSenhasPorColuna[idColuna]) {
+  setTimeout(() => {
+    botao.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 100);
+}
+
 
   // 📡 Envia ao Firebase
   firebase.database().ref('ultimaSenhaChamada').set({
