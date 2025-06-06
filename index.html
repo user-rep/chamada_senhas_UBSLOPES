@@ -88,5 +88,55 @@
   </footer>
 
   <script src="script.js"></script>
+
+<!-- Botão no canto superior direito -->
+<button onclick="toggleEncarte()" style="position: fixed; top: 10px; right: 10px; z-index: 9999; padding: 8px 16px; font-size: 14px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+  ❔ Ajuda / Atalhos
+</button>
+
+<!-- Encarte de Atalhos (inicialmente oculto) -->
+<div id="encarte-atalhos" style="
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255,255,255,0.97);
+  z-index: 9998;
+  overflow: auto;
+  padding: 30px;
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+  text-align: left;
+">
+  <h2 style="text-align: center;">🧾 Encarte de Atalhos – Sistema de Chamada de Senhas</h2>
+  <hr>
+  <ul style="line-height: 1.8; font-size: 16px; max-width: 800px; margin: auto;">
+    <li><b>N + 1</b> → Chamar próxima senha normal (Guichê 1)</li>
+    <li><b>N + 2</b> → Chamar próxima senha normal (Guichê 2)</li>
+    <li><b>N + 3</b> → Chamar próxima senha normal (Pós Consulta)</li>
+    <li><b>P + 1</b> → Chamar próxima senha preferencial (Guichê 1)</li>
+    <li><b>P + 2</b> → Chamar próxima senha preferencial (Guichê 2)</li>
+    <li><b>P + 3</b> → Chamar próxima senha preferencial (Pós Consulta)</li>
+    <li><b>R</b> ou <b>Enter</b> → Repetir voz da última senha chamada</li>
+    <li><b>Setas ⬆️⬇️⬅️➡️</b> → Navegar entre os botões de senhas</li>
+    <li><b>Espaço</b> → Repetir chamada (atalho alternativo)</li>
+    <li><b>Esc</b> → Fechar o encarte</li>
+  </ul>
+</div>
+<script> 
+function toggleEncarte() {
+  const encarte = document.getElementById("encarte-atalhos");
+  encarte.style.display = encarte.style.display === "none" ? "block" : "none";
+}
+
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape") {
+    const encarte = document.getElementById("encarte-atalhos");
+    encarte.style.display = "none";
+  }
+});
+<script>
+	
 </body>
 </html>
