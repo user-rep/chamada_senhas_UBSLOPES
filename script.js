@@ -72,8 +72,18 @@ firebase.database().ref('ultimaSenhaChamada').on('value', (snapshot) => {
   if (!data) return;
 
   aplicarDestaqueSenha(data);
+	atualizarCaixasUltimaSenha(data);
 });
 
+function atualizarCaixasUltimaSenha(data) {
+  const { idColuna, textoSenha } = data;
+
+  if (idColuna.includes('preferencial')) {
+    atualizarUltimaSenhaPreferencial(textoSenha);
+  } else if (idColuna.includes('normal')) {
+    atualizarUltimaSenhaNormal(textoSenha);
+  }
+}
 
 const historicoChamadas = [];
 
@@ -328,6 +338,7 @@ function criarBotao(idColuna, texto, classe) {
   idColuna: idColuna,
   numeroSenha: numeroSenha,
   classeDestaque: classeDestaque,
+  textoSenha: texto,
   timestamp: Date.now()
 });
 	
