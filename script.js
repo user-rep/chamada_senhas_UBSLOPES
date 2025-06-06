@@ -298,19 +298,6 @@ function obterColunaSincronizada(idColuna) {
   return null;
 }
 
-for (let i = 1; i <= 999; i++) {
-  const numero = i.toString().padStart(1, '0');
-  criarBotao("coluna-normal-guiche1", `Senha ${numero} - Guichê 1`, 'botao-preto');
-  criarBotao("coluna-normal-guiche2", `Senha ${numero} - Guichê 2`, 'botao-preto');
-  criarBotao("coluna-normal-posconsulta", `Senha ${numero} - Pós Consulta`, 'botao-preto');
-}
-
-for (let i = 1; i <= 999; i++) {
-  const numero = i.toString().padStart(1, '0');
-  criarBotao("coluna-preferencial-guiche1", `Senha ${numero} - Guichê 1`, 'botao-vermelho');
-  criarBotao("coluna-preferencial-guiche2", `Senha ${numero} - Guichê 2`, 'botao-vermelho');
-  criarBotao("coluna-preferencial-posconsulta", `Senha ${numero} - Pós Consulta`, 'botao-vermelho');
-}
 
 function exportarChamadasCSV() {
   if (historicoChamadas.length === 0) {
@@ -398,6 +385,22 @@ window.speechSynthesis.onvoiceschanged = () => {
 
 document.addEventListener("DOMContentLoaded", async function () {
   forcarSelecaoGuiche();
+  
+  for (let i = 1; i <= 999; i++) {
+  const numero = i.toString().padStart(1, '0');
+  criarBotao("coluna-normal-guiche1", `Senha ${numero} - Guichê 1`, 'botao-preto');
+  criarBotao("coluna-normal-guiche2", `Senha ${numero} - Guichê 2`, 'botao-preto');
+  criarBotao("coluna-normal-posconsulta", `Senha ${numero} - Pós Consulta`, 'botao-preto');
+}
+
+for (let i = 1; i <= 999; i++) {
+  const numero = i.toString().padStart(1, '0');
+  criarBotao("coluna-preferencial-guiche1", `Senha ${numero} - Guichê 1`, 'botao-vermelho');
+  criarBotao("coluna-preferencial-guiche2", `Senha ${numero} - Guichê 2`, 'botao-vermelho');
+  criarBotao("coluna-preferencial-posconsulta", `Senha ${numero} - Pós Consulta`, 'botao-vermelho');
+}
+  
+  
   const confirmar = confirm("Deseja reiniciar a contagem de senhas?");
   if (confirmar) {
     await limparSenhas();
