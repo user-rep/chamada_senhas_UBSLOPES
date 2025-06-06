@@ -87,13 +87,8 @@
     Desenvolvido por Egalon - Maio 2025 - Versão 0
   </footer>
 
-<!-- Botão para abrir o modal -->
-<button onclick="abrirModal()" style="margin: 10px; padding: 10px 20px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
-  ❔ Ajuda / Atalhos
-</button>
-
-<!-- Fundo escurecido e modal -->
-<div id="modal-fundo" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 1000;">
+<!-- Fundo escurecido e modal (z-index reforçado) -->
+<div id="modal-fundo" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 99999;">
   <div style="position: relative; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; width: 90%; max-width: 800px;">
     
     <h2 style="text-align: center;">🧾 Encarte de Atalhos – Sistema de Chamada</h2>
@@ -132,24 +127,6 @@
   </div>
 </div>
 
-
-<script>
-function abrirModal() {
-  document.getElementById("modal-fundo").style.display = "block";
-}
-
-function fecharModal() {
-  document.getElementById("modal-fundo").style.display = "none";
-}
-
-// Também fecha se clicar fora do modal
-window.onclick = function(event) {
-  const modal = document.getElementById("modal-fundo");
-  if (event.target === modal) {
-    modal.style.display = "none";
-  }
-}
-</script>
 
 
   <script src="script.js"></script>
