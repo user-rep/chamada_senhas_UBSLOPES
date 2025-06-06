@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+  <meta charset="UTF-8">
+  <title>Chamada de Senhas</title>
+  <link rel="stylesheet" href="style.css">
+  
+   <!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAtN_zO40we4KDaI3AJUNepTTmvG9IHc0g",
+    authDomain: "chamadasenhas.firebaseapp.com",
+    databaseURL: "https://chamadasenhas-default-rtdb.firebaseio.com",
+    projectId: "chamadasenhas",
+    storageBucket: "chamadasenhas.appspot.com",
+    messagingSenderId: "873539549847",
+    appId: "1:873539549847:web:500372c75b92b5de0487d2"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+</script>
+
+</head>
+
+<body>
+
+  <div class="marca-dagua">Uso Exclusivo da UBS LOPES DE OLIVEIRA</div>
+
+  <h2>CHAMADA DE SENHAS - UBS LOPES DE OLIVEIRA</h2>
+
+  <div class="chamada-nome">
+    <input type="text" id="nomePessoa" placeholder="Digite Aqui">
+  </div>
+
+<div id="seletor-voz">
+  <label for="vozSelecionada">Áudio:</label>
+  <select id="vozSelecionada">
+    <option value="Microsoft Daniel - Portuguese (Brazil)">Masculino</option>
+	<option value="Microsoft Maria - Portuguese (Brazil)">Feminino</option>
+  </select>
+</div>
+
+  <div class="botoes-chamada">
+    <button onclick="chamarNome(1)" class="botao-amarelo">Chamar no Guichê 1</button>
+    <button onclick="chamarNome(2)" class="botao-verde">Chamar no Guichê 2</button>
+    <button onclick="chamarNome(3)" class="botao-lilas">Chamar no Pós Consulta</button>
+    <button onclick="chamarNome(4)" class="botao-bege">Ler em Voz Alta</button>
+    <button onclick="exportarChamadasCSV()" class="botao-bege">📄 Gravar Seu Histórico de Chamadas 📄</button>
+  </div>
+  
+  <div id="controle-guiches" style="text-align: center; margin-bottom: 20px;">
+  <label><input type="checkbox" id="check-guiche1" onchange="atualizarControlesGuiche()"> Guichê 1</label>
+  <label><input type="checkbox" id="check-guiche2" onchange="atualizarControlesGuiche()"> Guichê 2</label>
+  <label><input type="checkbox" id="check-posconsulta" onchange="atualizarControlesGuiche()"> Pós Consulta</label>
+</div>
+
+
+  <div class="grid-container">
+    <div class="coluna"><div class="titulo-coluna">Normal<br>Guichê 1</div><div id="coluna-normal-guiche1"></div></div>
+    <div class="coluna"><div class="titulo-coluna">Preferencial<br>Guichê 1</div><div id="coluna-preferencial-guiche1"></div></div>
+    <div class="coluna"><div class="titulo-coluna">Normal<br>Guichê 2</div><div id="coluna-normal-guiche2"></div></div>
+    <div class="coluna"><div class="titulo-coluna">Preferencial<br>Guichê 2</div><div id="coluna-preferencial-guiche2"></div></div>
+    <div class="coluna"><div class="titulo-coluna">Normal<br>Pós Consulta</div><div id="coluna-normal-posconsulta"></div></div>
+    <div class="coluna"><div class="titulo-coluna">Preferencial<br>Pós Consulta</div><div id="coluna-preferencial-posconsulta"></div></div>
+  </div>
+
+  <div class="box-senha" id="box-senha-normal">
+    <h3>Sua Última Senha Normal</h3>
+    <div class="senha" id="senha-normal">- - - - -</div>
+  </div>
+
+  <div class="box-senha" id="box-senha-preferencial">
+    <h3>Sua Última Senha Preferencial</h3>
+    <div class="senha" id="senha-preferencial">- - - - -</div>
+  </div>
+
+  <button id="btn-voltar-topo" onclick="voltarAoTopo()">Início</button>
+  <button id="btn-voltar-fundo" onclick="voltarAoFundo()">Fim</button>
+  <button id="btn-limpar" onclick="limparSenhas()">Limpar Senhas</button>
+
+  <footer class="rodape-fixo">
+    Desenvolvido por Egalon - Maio 2025 - Versão 0
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
