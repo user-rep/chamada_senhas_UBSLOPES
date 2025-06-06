@@ -184,13 +184,6 @@ function criarBotao(idColuna, texto, classe) {
 
   botao.onclick = () => {
 	  
-	  salvarUltimaSenhaFirebase(idColuna, numeroSenha);
-
-    const colunaSincronizadaID = obterColunaSincronizada(idColuna);
-    if (colunaSincronizadaID) {
-        salvarUltimaSenhaFirebase(colunaSincronizadaID, numeroSenha);
-    }
-	
     falar(textoFalado);
 
     const agora = new Date();
@@ -257,6 +250,13 @@ function criarBotao(idColuna, texto, classe) {
 
     botao.scrollIntoView({ behavior: 'smooth', block: 'center' });
     ultimaSenhaChamada = botao;
+	
+	salvarUltimaSenhaFirebase(idColuna, numeroSenha);
+
+    const colunaSincronizadaID = obterColunaSincronizada(idColuna);
+    if (colunaSincronizadaID) {
+        salvarUltimaSenhaFirebase(colunaSincronizadaID, numeroSenha);
+    }
 
   };
 
