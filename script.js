@@ -299,22 +299,27 @@ function criarBotao(idColuna, texto, classe) {
 
     }
 
-    const limite = maioresSenhasPorColuna[idColuna];
+    const limite = maioresSenhasPorColuna[idColuna] || numeroSenha;
     const classeDestaque = isPreferencial ? 'botao-destacado-preferencial' : 'botao-destacado-normal';
 
-    botoesNaColuna.forEach(btn => {
-      btn.classList.remove('botao-destacado-normal', 'botao-destacado-preferencial');
-    });
+    // Limpa apenas o destaque VISUAL atual, mas vamos reaplicar com base na maior senha
+botoesNaColuna.forEach(btn => {
+  btn.classList.remove('botao-destacado-normal', 'botao-destacado-preferencial');
+});
 
-    botoesNaColuna.forEach(btn => {
-      const match = btn.textContent.match(/Senha (\d+)/);
-      if (match) {
-        const num = parseInt(match[1], 10);
-        if (num <= limite) {
-          btn.classList.add(classeDestaque);
-        }
-      }
-    });
+// ✅ Reaplica o hover com base no maior número salvo para esta coluna
+const maior = maioresSenhasPorColuna[idColuna] || numeroSenha;
+
+botoesNaColuna.forEach(btn => {
+  const match = btn.textContent.match(/Senha (\d+)/);
+  if (match) {
+    const num = parseInt(match[1], 10);
+    if (num <= maior) {
+      btn.classList.add(classeDestaque);
+    }
+  }
+});
+
 
     const colunaSincronizadaID = obterColunaSincronizada(idColuna);
     if (colunaSincronizadaID) {
