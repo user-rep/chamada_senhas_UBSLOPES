@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+  <meta charset="UTF-8">
+  <title>Chamada de Senhas</title>
+  <link rel="stylesheet" href="style.css">
+  
+   <!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAtN_zO40we4KDaI3AJUNepTTmvG9IHc0g",
+    authDomain: "chamadasenhas.firebaseapp.com",
+    databaseURL: "https://chamadasenhas-default-rtdb.firebaseio.com",
+    projectId: "chamadasenhas",
+    storageBucket: "chamadasenhas.appspot.com",
+    messagingSenderId: "873539549847",
+    appId: "1:873539549847:web:500372c75b92b5de0487d2"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+</script>
+
+</head>
+
+<body>
+
+  <div class="marca-dagua">Uso Exclusivo da UBS LOPES DE OLIVEIRA</div>
+
+  <h2>CHAMADA DE SENHAS - UBS LOPES DE OLIVEIRA</h2>
+
+  <div class="chamada-nome">
+    <input type="text" id="nomePessoa" placeholder="Digite Aqui">
+  </div>
+
+<div id="seletor-voz">
+  <label for="vozSelecionada">Áudio:</label>
+  <select id="vozSelecionada">
+    <option value="Microsoft Daniel - Portuguese (Brazil)">Masculino</option>
+	<option value="Microsoft Maria - Portuguese (Brazil)">Feminino</option>
+  </select>
+</div>
+
+  <div class="botoes-chamada">
+    <button onclick="chamarNome(1)" class="botao-amarelo">Chamar no Guichê 1</button>
+    <button onclick="chamarNome(2)" class="botao-verde">Chamar no Guichê 2</button>
+    <button onclick="chamarNome(3)" class="botao-lilas">Chamar no Pós Consulta</button>
+    <button onclick="chamarNome(4)" class="botao-bege">Ler em Voz Alta</button>
+    <button onclick="exportarChamadasCSV()" class="botao-bege">📄 Gravar Histórico de Chamadas 📄</button>
+  </div>
+  
+  <div id="controle-guiches" style="text-align: center; margin-bottom: 20px;">
+  <label><input type="checkbox" id="check-guiche1" onchange="atualizarControlesGuiche()"> Guichê 1</label>
+  <label><input type="checkbox" id="check-guiche2" onchange="atualizarControlesGuiche()"> Guichê 2</label>
+  <label><input type="checkbox" id="check-posconsulta" onchange="atualizarControlesGuiche()"> Pós Consulta</label>
+</div>
+
+
+  <div class="grid-container">
+    <div class="coluna"><div class="titulo-coluna">Normal<br>Guichê 1</div><div id="coluna-normal-guiche1"></div></div>
+    <div class="coluna"><div class="titulo-coluna">Preferencial<br>Guichê 1</div><div id="coluna-preferencial-guiche1"></div></div>
+    <div class="coluna"><div class="titulo-coluna">Normal<br>Guichê 2</div><div id="coluna-normal-guiche2"></div></div>
+    <div class="coluna"><div class="titulo-coluna">Preferencial<br>Guichê 2</div><div id="coluna-preferencial-guiche2"></div></div>
+    <div class="coluna"><div class="titulo-coluna">Normal<br>Pós Consulta</div><div id="coluna-normal-posconsulta"></div></div>
+    <div class="coluna"><div class="titulo-coluna">Preferencial<br>Pós Consulta</div><div id="coluna-preferencial-posconsulta"></div></div>
+  </div>
+
+  <div class="box-senha" id="box-senha-normal">
+    <h3>Última Senha Normal</h3>
+    <div class="senha" id="senha-normal">- - - - -</div>
+  </div>
+
+  <div class="box-senha" id="box-senha-preferencial">
+    <h3>Última Senha Preferencial</h3>
+    <div class="senha" id="senha-preferencial">- - - - -</div>
+  </div>
+
+  <button id="btn-voltar-topo" onclick="voltarAoTopo()">Início</button>
+  <button id="btn-voltar-fundo" onclick="voltarAoFundo()">Fim</button>
+  <button id="btn-limpar" onclick="limparSenhas()">Limpar Senhas</button>
+
+  <footer class="rodape-fixo">
+    Desenvolvido por Egalon - Maio 2025 - Versão 0
+  </footer>
+
+<!-- Botão para mostrar/ocultar -->
+<button onclick="toggleEncarte()" style="margin: 20px; padding: 10px 20px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+  ❔ Ajuda / Atalhos
+</button>
+
+<!-- Encarte de Atalhos (inicialmente oculto) -->
+<div id="encarte-atalhos" style="display: none; font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; border: 2px solid #ccc; border-radius: 10px; max-width: 800px; margin: 20px auto;">
+  <h2 style="text-align: center;">🧾 Encarte de Atalhos – Sistema de Chamada de Senhas</h2>
+  <hr>
+
+  <h3>🔁 Repetir Última Senha</h3>
+  <p><strong>R</strong> → Repete a última senha chamada em voz alta.</p>
+
+  <h3>🔢 Chamar Nova Senha</h3>
+  <ul>
+    <li><strong>N</strong> + <strong>1</strong> → Normal – Guichê 1</li>
+    <li><strong>N</strong> + <strong>2</strong> → Normal – Guichê 2</li>
+    <li><strong>N</strong> + <strong>3</strong> → Normal – Pós Consulta</li>
+    <li><strong>P</strong> + <strong>1</strong> → Preferencial – Guichê 1</li>
+    <li><strong>P</strong> + <strong>2</strong> → Preferencial – Guichê 2</li>
+    <li><strong>P</strong> + <strong>3</strong> → Preferencial – Pós Consulta</li>
+  </ul>
+
+  <h3>🧭 Navegação</h3>
+  <ul>
+    <li><strong>Setas</strong> → Navega entre os botões de senha</li>
+    <li><strong>Enter</strong> → Chama a senha em foco</li>
+  </ul>
+
+  <h3>🗣️ Por Nome</h3>
+  <p>Digite o nome e pressione Enter ou clique no botão do guichê.</p>
+
+  <h3>📁 Exportar Histórico</h3>
+  <p>Use o botão <strong>Exportar CSV</strong>.</p>
+</div>
+
+<script>
+function toggleEncarte() {
+  const encarte = document.getElementById('encarte-atalhos');
+  encarte.style.display = (encarte.style.display === 'none') ? 'block' : 'none';
+}
+</script>
+
+
+
+
+  <script src="script.js"></script>
+</body>
+</html>
