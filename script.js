@@ -499,7 +499,36 @@ for (let i = 1; i <= 999; i++) {
   
   forcarSelecaoGuiche();
   
+async function chamarSenhaSincronizada(tipo, guiche) {
+  const ref = firebase.database().ref(tipo === 'normal' ? 'contadorNormal' : 'contadorPreferencial');
+  const snapshot = await ref.get();
+  let contador = snapshot.exists() ? snapshot.val() : 0;
+  contador += 1;
+  await ref.set(contador);
 
+  const idColuna = tipo === 'normal'
+    ? (guiche === 1 ? 'coluna-normal-guiche1' : 'coluna-normal-guiche2')
+    : (guiche === 1 ? 'coluna-preferencial-guiche1' : 'coluna-preferencial-guiche2');
+
+  const coluna = document.getElementById(idColuna);
+  const botoes = Array.from(coluna.querySelectorAll('button'));
+  const botao = botoes.find(b => b.textContent.includes(`Senha ${contador} -`));
+
+  if (botao) {
+
+	  // ✅ Grava a última senha no Firebase antes de clicar
+    salvarUltimaSenhaFirebase(idColuna, contador);
+
+    const colunaSincronizadaID = obterColunaSincronizada(idColuna);
+    if (colunaSincronizadaID) {
+      salvarUltimaSenhaFirebase(colunaSincronizadaID, contador);
+    }
+	
+    botao.click();
+  } else {
+    console.error('Botão não encontrado:', `Senha ${contador} - Guichê ${guiche}`);
+  }
+}
   
   const confirmar = confirm("Deseja reiniciar a contagem de senhas?");
   if (confirmar) {
