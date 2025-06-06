@@ -1,3 +1,5 @@
+let paginaCarregando = true;
+
 function aplicarDestaqueSenha(data) {
   const { idColuna, numeroSenha, classeDestaque } = data;
 
@@ -269,7 +271,7 @@ function atualizarUltimaSenhaPreferencial(texto) {
 
 const ultimosBotoesPorColuna = {};
 const maioresSenhasPorColuna = {};
-let paginaCarregando = true;
+
 
 
 function criarBotao(idColuna, texto, classe) {
@@ -541,7 +543,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     await restaurarEstadoSenhasFirebase();
     await atualizarBoxesUltimaSenhaComBaseNoFirebase();	  
   }
-    let paginaCarregando = false;
+    paginaCarregando = false;
 });
 
 function forcarSelecaoGuiche() {
