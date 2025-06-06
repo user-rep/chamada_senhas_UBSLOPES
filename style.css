@@ -1,0 +1,351 @@
+
+	body {
+      font-family: Arial, sans-serif;
+      background-color: #f1f3f5;
+      margin: 0;
+      padding-left: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh; /* Garante que o body ocupe toda a altura da tela */
+      overflow: hidden;
+    }
+
+    h2 {
+      text-align: center;
+	  font-size: 30px;
+      position: sticky;
+      top: 40px;
+      background-color: #f1f3f5;
+      padding: 10px 0;
+      margin: 0;
+      z-index: 1000;
+    }
+
+    .chamada-nome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: sticky;
+      top: 80px;
+      background-color: #f1f3f5;
+      z-index: 900;
+	    padding: 50px;
+
+      
+    }
+
+    .chamada-nome input {
+      width: 100%;
+      max-width: 600px;
+      padding: 10px;
+      font-size: 18px;
+      margin-bottom: 0; /* Sem espaço abaixo */
+	  
+    }
+
+    .chamada-nome .botoes {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+	  padding: 10px 0;
+	  z-index: 9999;
+    }
+
+    .chamada-nome button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+	
+    }
+
+    .botoes-chamada button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      min-width: 200px;
+      z-index: 9999;
+      
+    }
+
+    /* Grid único com 6 colunas */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr); /* 6 colunas */
+      gap: 10px;
+      flex-grow: 1; /* Faz com que o grid ocupe todo o espaço restante */
+      overflow-y: auto; /* Rolagem habilitada para o grid inteiro */
+      max-height: auto;
+      margin: 2px;
+      margin-top: 0px;
+	  margin-bottom: 30px;
+      overflow-x: hidden; /* Evita rolagem horizontal */
+    }
+
+    .coluna {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+	  overflow-y: auto;
+    }
+
+
+    /* Títulos fixos no topo das colunas */
+    .titulo-coluna {
+      font-weight: bold;
+	  font-size: 20px;
+      text-align: center;
+      margin-bottom: 10px;
+      padding: 5px;
+      background-color: #f1f3f5;
+      position: sticky;
+      top: 0; /* Fixa o título ao rolar */
+      z-index: 10;
+      border-bottom: 2px solid #ddd;
+
+    }
+
+    .coluna button {
+      padding: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      width: 100%;
+      white-space: nowrap;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      transition: background-color 0.2s ease;
+    }
+
+    /* Botões Inputbox */
+    .botao-amarelo { background-color: #f0f0f0; color: #000; }
+    .botao-verde { background-color: #f0f0f0; color: #000; }
+	.botao-lilas { background-color: #f0f0f0; color: #000; }
+	.botao-bege { background-color: #f0f0f0; color: #000; }
+   
+    .botao-amarelo:hover,
+    .botao-verde:hover { background-color: #aaaaaa; }
+	.botao-lilas:hover { background-color: #aaaaaa; }
+	.botao-bege:hover { background-color: #aaaaaa; }
+	
+	/* Botões Colunas */
+	.botao-preto { background-color: #ffffff; color: #000; }
+    .botao-vermelho { background-color: #dc3545; color: #ffffff; }
+	.botao-preto:hover { background-color: #8c8c8c !important;}
+    .botao-vermelho:hover { background-color: #800015 !important; }
+
+    .botoes-chamada {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+
+    }
+
+    /* Botão voltar ao topo */
+   #btn-voltar-topo {
+      position: fixed;
+      top: 10px;
+      right: 100px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #f1f1f1;
+      color: black;
+      border: 2px solid #a0a0a0;
+      border-radius: 0;
+      cursor: pointer;
+      z-index: 1000;
+      box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    #btn-voltar-topo:hover {
+     background-color: #c0c0c0;
+     box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    #btn-voltar-topo:active {
+     background-color: #a0a0a0;
+     box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+/* Botão voltar fundo */
+   #btn-voltar-fundo {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #f1f1f1;
+      color: black;
+      border: 2px solid #a0a0a0;
+      border-radius: 0;
+      cursor: pointer;
+      z-index: 1000;
+      box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    #btn-voltar-fundo:hover {
+     background-color: #c0c0c0;
+     box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    #btn-voltar-fundo:active {
+     background-color: #a0a0a0;
+     box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+/* Botão limpar */
+   #btn-limpar {
+      position: fixed;
+      top: 10px;
+      right: 200px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #ffffff;
+      color: black;
+      border: 2px solid #a0a0a0;
+      border-radius: 0;
+      cursor: pointer;
+      z-index: 1000;
+      box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    #btn-limpar:hover {
+     background-color: #c0c0c0;
+     box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    #btn-limpar:active {
+     background-color: #a0a0a0;
+     box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .box-senha {
+      position: fixed;
+	  display: flex;
+      flex-direction: column;
+      justify-content: center; /* Alinhamento vertical */
+      align-items: center;     /* Alinhamento horizontal */
+      left: 20px;
+      width: 220px;
+	  height: 100px;
+      background-color: #ffffff;
+      padding: 15px;
+      border: 4px solid black;
+      border-radius: 0;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 9999;
+      margin-top: 20px;
+    }
+
+    #box-senha-normal {
+      top: 0px;
+	  left: 2px;
+      color: black;
+	 
+    }
+
+    #box-senha-preferencial {
+      top: 0px;
+	  left: 270px;
+      background-color: #dc3545;
+      color: white;
+	
+    }
+
+    .box-senha h3 {
+      margin-top: 0;
+      font-size: 20px;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .box-senha .senha {
+      text-align: center;
+      font-size: 18px;
+    }
+
+.avisos-container {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+}
+  
+	.marca-dagua {
+  position: fixed;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-15deg);
+  font-size: 90px;
+  color: rgba(0, 0, 0, 0.12); /* transparência leve */
+  white-space: nowrap;
+  pointer-events: none; /* não interfere em cliques */
+  z-index: 0;
+  user-select: none;
+}
+
+.rodape-fixo {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  color: gray;
+  background-color: transparent;
+  padding: 5px 0;
+  margin: 0;
+  z-index: 9999;
+}
+
+.botao-destacado-normal {
+  background-color: #dddddd !important; /* cinza claro */
+  color: white !important;
+
+}
+
+.botao-destacado-preferencial {
+  background-color: #ffc1c1 !important; /* vermelho claro */
+  color: white !important;
+ 
+}
+
+#seletor-voz {
+  position: fixed;
+  top: 125px;
+  right: 440px; 
+  padding: 8px 12px;
+  border-radius: 0px;
+  z-index: 1000;
+  font-family: Arial, sans-serif;
+}
+
+
+#vozSelecionada {
+  font-size: 16px;         /* Tamanho da fonte dentro do select */
+  padding: 8px 12px;       /* Espaçamento interno */
+  border: 1px solid black;  /* Borda mais visível */
+  border-radius: 0px;      /* Cantos arredondados */
+  background-color: #fff;  /* Fundo branco */
+  margin-left: 0px;       /* Espaço entre label e select */
+  max-width: 300px;        /* Largura máxima */
+}
+
+label[for="vozSelecionada"] {
+  font-size: 16px;         /* Tamanho da fonte do label */
+  font-weight: bold;       /* Negrito para destaque */
+  font-family: Arial, sans-serif;
+}
+
+button:disabled {
+  background-color: #e0e0e0 !important; /* Cinza claro */
+  color: #999 !important;               /* Texto acinzentado */
+  border: 1px solid #bbb !important;    /* Borda menos chamativa */
+  cursor: not-allowed !important;       /* Ícone de "proibido" */
+  opacity: 0.7;                         /* Um pouco mais apagado */
+}
+
+.coluna-desativada {
+  opacity: 0.4;
+  pointer-events: none; /* Impede qualquer clique */
+}
