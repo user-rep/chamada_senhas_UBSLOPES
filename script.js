@@ -270,89 +270,89 @@ function criarBotao(idColuna, texto, classe) {
     ? `Senha ${numeroSenha}, preferencial, ${destino}`
     : `Senha ${numeroSenha}, normal, ${destino}`;
 
-  botao.onclick = () => {
-	  
-    falar(textoFalado);
+botao.onclick = () => {
+  falar(textoFalado);
 
-    const agora = new Date();
-    historicoChamadas.push({
-      tipo: isPreferencial ? "Senha Preferencial" : "Senha Normal",
-      senha: texto,
-      guiche: destino,
-      data: agora.toLocaleDateString('pt-BR'),
-      hora: agora.toLocaleTimeString('pt-BR'),
-    });
+  const agora = new Date();
+  historicoChamadas.push({
+    tipo: isPreferencial ? "Senha Preferencial" : "Senha Normal",
+    senha: texto,
+    guiche: destino,
+    data: agora.toLocaleDateString('pt-BR'),
+    hora: agora.toLocaleTimeString('pt-BR'),
+  });
 
-    if (isPreferencial) {
-      atualizarUltimaSenhaPreferencial(texto);
-    } else {
-      atualizarUltimaSenhaNormal(texto);
-    }
-
-    const botoesNaColuna = Array.from(coluna.querySelectorAll('button'));
-
-    if (!maioresSenhasPorColuna[idColuna] || numeroSenha > maioresSenhasPorColuna[idColuna]) {
-      maioresSenhasPorColuna[idColuna] = numeroSenha;
-      salvarMaiorSenhaFirebase(idColuna, numeroSenha);
-      const tipo = isPreferencial ? 'preferencial' : 'normal';
-      atualizarContadorFirebaseSeMaior(tipo, numeroSenha);
-
-    }
-
-    const limite = maioresSenhasPorColuna[idColuna] || numeroSenha;
-    const classeDestaque = isPreferencial ? 'botao-destacado-preferencial' : 'botao-destacado-normal';
-
-    // Limpa apenas o destaque VISUAL atual, mas vamos reaplicar com base na maior senha
-botoesNaColuna.forEach(btn => {
-  btn.classList.remove('botao-destacado-normal', 'botao-destacado-preferencial');
-});
-
-// ✅ Reaplica o hover com base no maior número salvo para esta coluna
-const maior = maioresSenhasPorColuna[idColuna] || numeroSenha;
-
-botoesNaColuna.forEach(btn => {
-  const match = btn.textContent.match(/Senha (\d+)/);
-  if (match) {
-    const num = parseInt(match[1], 10);
-    if (num <= maior) {
-      btn.classList.add(classeDestaque);
-    }
+  if (isPreferencial) {
+    atualizarUltimaSenhaPreferencial(texto);
+  } else {
+    atualizarUltimaSenhaNormal(texto);
   }
-});
 
+  // 🔁 ATUALIZA histórico de maior senha chamada, se necessário
+  if (!maioresSenhasPorColuna[idColuna] || numeroSenha > maioresSenhasPorColuna[idColuna]) {
+    maioresSenhasPorColuna[idColuna] = numeroSenha;
+    salvarMaiorSenhaFirebase(idColuna, numeroSenha);
+    const tipo = isPreferencial ? 'preferencial' : 'normal';
+    atualizarContadorFirebaseSeMaior(tipo, numeroSenha);
+  }
 
-    const colunaSincronizadaID = obterColunaSincronizada(idColuna);
-    if (colunaSincronizadaID) {
-      const colunaOutro = document.getElementById(colunaSincronizadaID);
-      if (colunaOutro) {
-        const botoesOutro = Array.from(colunaOutro.querySelectorAll('button'));
-        botoesOutro.forEach(btn => {
-          const match = btn.textContent.match(/Senha (\d+)/);
-          if (match) {
-            const num = parseInt(match[1], 10);
-            if (num <= limite) {
-              btn.classList.add(classeDestaque);
-              if (num === numeroSenha) {
-                btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              }
-            }
-          }
-        });
+  // ✅ Sempre usa o maior número já chamado (não o número clicado!)
+  const limite = maioresSenhasPorColuna[idColuna];
+  const classeDestaque = isPreferencial ? 'botao-destacado-preferencial' : 'botao-destacado-normal';
+
+  const botoesNaColuna = Array.from(coluna.querySelectorAll('button'));
+
+  // 🔄 LIMPA e DESTACA baseado no maior chamado
+  botoesNaColuna.forEach(btn => {
+    btn.classList.remove('botao-destacado-normal', 'botao-destacado-preferencial');
+  });
+
+  botoesNaColuna.forEach(btn => {
+    const match = btn.textContent.match(/Senha (\d+)/);
+    if (match) {
+      const num = parseInt(match[1], 10);
+      if (num <= limite) {
+        btn.classList.add(classeDestaque);
       }
     }
+  });
 
-    botao.scrollIntoView({ behavior: 'smooth', block: 'center' });
-	
-	  firebase.database().ref('ultimaSenhaChamada').set({
-  idColuna: idColuna,
-  numeroSenha: numeroSenha,
-  classeDestaque: classeDestaque,
-  textoSenha: texto,
-  timestamp: Date.now()
-});
-	
-    ultimaSenhaChamada = botao;
-  };
+  // 🔁 Mesma lógica para a COLUNA SINCRONIZADA
+  const colunaSincronizadaID = obterColunaSincronizada(idColuna);
+  if (colunaSincronizadaID) {
+    const colunaOutro = document.getElementById(colunaSincronizadaID);
+    if (colunaOutro) {
+      const botoesOutro = Array.from(colunaOutro.querySelectorAll('button'));
+      botoesOutro.forEach(btn => {
+        btn.classList.remove('botao-destacado-normal', 'botao-destacado-preferencial');
+      });
+      botoesOutro.forEach(btn => {
+        const match = btn.textContent.match(/Senha (\d+)/);
+        if (match) {
+          const num = parseInt(match[1], 10);
+          if (num <= limite) {
+            btn.classList.add(classeDestaque);
+          }
+        }
+      });
+    }
+  }
+
+  // 🎯 Scroll apenas na senha clicada (não afeta os hovers)
+  botao.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  // 📡 Envia ao Firebase
+  firebase.database().ref('ultimaSenhaChamada').set({
+    idColuna: idColuna,
+    numeroSenha: numeroSenha,
+    classeDestaque: classeDestaque,
+    textoSenha: texto,
+    timestamp: Date.now()
+  });
+
+  ultimaSenhaChamada = botao;
+};
+
 
   coluna.appendChild(botao);
 }
