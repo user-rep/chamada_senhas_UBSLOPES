@@ -603,7 +603,7 @@ function repetirUltimaSenha() {
   if (!ultimaSenhaChamada) return;
 
   const texto = ultimaSenhaChamada.textContent;
-  const isPreferencial = texto.toLowerCase().includes("preferencial");
+  const isPreferencial = ultimaSenhaChamada.classList.contains('botao-vermelho');
   const numeroSenha = parseInt(texto.match(/Senha (\d+)/)?.[1], 10);
   const destino = texto.split(" - ")[1];
 
