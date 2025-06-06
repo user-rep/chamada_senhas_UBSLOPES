@@ -61,13 +61,6 @@ botoesOutro.forEach(btn => {
     }
   }
 
-  // Atualiza os campos "Última Senha"
-  const texto = Array.from(coluna.querySelectorAll('button'))
-    .find(btn => btn.textContent.includes(`Senha ${numeroSenha} -`))?.textContent;
-  if (texto) {
-    if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(texto);
-    else atualizarUltimaSenhaNormal(texto);
-  }
 	if (!paginaCarregando && texto) {
   if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(texto);
   else atualizarUltimaSenhaNormal(texto);
