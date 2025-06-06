@@ -58,6 +58,11 @@ botoesOutro.forEach(btn => {
       }
     }
   }
+	// Atualiza os boxes SOMENTE se não estiver carregando a página
+  if (!paginaCarregando && textoSenha) {
+    if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(textoSenha);
+    else atualizarUltimaSenhaNormal(textoSenha);
+  }
 }
 
 firebase.database().ref('ultimaSenhaChamada').on('value', (snapshot) => {
@@ -265,6 +270,8 @@ function atualizarUltimaSenhaPreferencial(texto) {
 
 const ultimosBotoesPorColuna = {};
 const maioresSenhasPorColuna = {};
+let paginaCarregando = true;
+
 
 function criarBotao(idColuna, texto, classe) {
   const coluna = document.getElementById(idColuna);
@@ -535,6 +542,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     await restaurarEstadoSenhasFirebase();
     await atualizarBoxesUltimaSenhaComBaseNoFirebase();	  
   }
+    let paginaCarregando = true;
 });
 
 function forcarSelecaoGuiche() {
