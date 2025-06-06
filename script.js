@@ -1,4 +1,5 @@
-
+let ultimaSenhaChamada = null;
+let ultimaSenhaChamadaIdColuna = null;
 
 function aplicarDestaqueSenha(data) {
   const { idColuna, numeroSenha, classeDestaque } = data;
@@ -355,6 +356,8 @@ botao.onclick = () => {
   });
 
   ultimaSenhaChamada = botao;
+  ultimaSenhaChamadaIdColuna = idColuna;
+
 
 };
 
