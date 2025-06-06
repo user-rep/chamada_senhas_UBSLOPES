@@ -5,6 +5,24 @@ const contadorLocal = {
   preferencial: 0
 };
 
+for (let i = 1; i <= 999; i++) {
+  const numero = i.toString().padStart(1, '0');
+  criarBotao("coluna-normal-guiche1", `Senha ${numero} - Guichê 1`, 'botao-preto');
+  criarBotao("coluna-normal-guiche2", `Senha ${numero} - Guichê 2`, 'botao-preto');
+  criarBotao("coluna-normal-posconsulta", `Senha ${numero} - Pós Consulta`, 'botao-preto');
+}
+
+for (let i = 1; i <= 999; i++) {
+  const numero = i.toString().padStart(1, '0');
+  criarBotao("coluna-preferencial-guiche1", `Senha ${numero} - Guichê 1`, 'botao-vermelho');
+  criarBotao("coluna-preferencial-guiche2", `Senha ${numero} - Guichê 2`, 'botao-vermelho');
+  criarBotao("coluna-preferencial-posconsulta", `Senha ${numero} - Pós Consulta`, 'botao-vermelho');
+}
+
+
+
+
+
 function salvarMaiorSenhaFirebase(idColuna, numeroSenha) {
   firebase.database().ref('maioresSenhasPorColuna/' + idColuna).set(numeroSenha);
 }
@@ -383,19 +401,7 @@ window.speechSynthesis.onvoiceschanged = () => {
   carregarVozes(() => {});
 };
 
-for (let i = 1; i <= 999; i++) {
-  const numero = i.toString().padStart(1, '0');
-  criarBotao("coluna-normal-guiche1", `Senha ${numero} - Guichê 1`, 'botao-preto');
-  criarBotao("coluna-normal-guiche2", `Senha ${numero} - Guichê 2`, 'botao-preto');
-  criarBotao("coluna-normal-posconsulta", `Senha ${numero} - Pós Consulta`, 'botao-preto');
-}
 
-for (let i = 1; i <= 999; i++) {
-  const numero = i.toString().padStart(1, '0');
-  criarBotao("coluna-preferencial-guiche1", `Senha ${numero} - Guichê 1`, 'botao-vermelho');
-  criarBotao("coluna-preferencial-guiche2", `Senha ${numero} - Guichê 2`, 'botao-vermelho');
-  criarBotao("coluna-preferencial-posconsulta", `Senha ${numero} - Pós Consulta`, 'botao-vermelho');
-}
 
 
 document.addEventListener("DOMContentLoaded", async function () {
