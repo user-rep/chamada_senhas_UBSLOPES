@@ -8,21 +8,23 @@ function aplicarDestaqueSenha(data) {
   if (!coluna) return;
 
   const botoes = Array.from(coluna.querySelectorAll('button'));
+  let botaoMaior = null;	
   botoes.forEach(btn => {
     const match = btn.textContent.match(/Senha (\d+)/);
     if (match) {
       const num = parseInt(match[1], 10);
       if (num <= limite) {
         btn.classList.add(classeDestaque);
-	       // Scroll apenas se for a maior senha chamada
-        if (num === limite) {
-          setTimeout(() => {
-            btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }, 100);
-        }
+        if (num === limite) botaoMaior = btn;
       }
     }
   });
+
+  if (botaoMaior) {
+    setTimeout(() => {
+      botaoMaior.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  }
 
   const idColunaSincronizada = obterColunaSincronizada(idColuna);
   if (idColunaSincronizada) {
@@ -32,20 +34,24 @@ function aplicarDestaqueSenha(data) {
     const colunaOutro = document.getElementById(idColunaSincronizada);
     if (colunaOutro) {
       const botoesOutro = Array.from(colunaOutro.querySelectorAll('button'));
-      botoesOutro.forEach(btn => {
+      let botaoMaiorOutro = null; 
+	    
+botoesOutro.forEach(btn => {
         const match = btn.textContent.match(/Senha (\d+)/);
         if (match) {
           const num = parseInt(match[1], 10);
           if (num <= limiteSincronizada) {
             btn.classList.add(classeDestaque);
-		    if (num === limiteSincronizada) {
-              setTimeout(() => {
-                btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              }, 100);
-            }  
+            if (num === limiteSincronizada) botaoMaiorOutro = btn;
           }
         }
       });
+
+      if (botaoMaiorOutro) {
+        setTimeout(() => {
+          botaoMaiorOutro.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      }
     }
   }
 
