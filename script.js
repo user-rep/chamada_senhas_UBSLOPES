@@ -6,6 +6,9 @@ function aplicarDestaqueSenha(data) {
 
   const botoes = Array.from(coluna.querySelectorAll('button'));
 
+// ✅ Usar o maior número salvo (não o da última senha clicada, se for menor)
+  const maiorNumero = maioresSenhasPorColuna[idColuna] || numeroSenha;
+
   // Limpa destaques anteriores
   botoes.forEach(btn => {
     btn.classList.remove('botao-destacado-normal', 'botao-destacado-preferencial');
@@ -64,6 +67,7 @@ function aplicarDestaqueSenha(data) {
       }, 100);
     }
   }
+	atualizarCaixasUltimaSenha(data); // Garante que a caixa também é atualizada
 }
 
 
