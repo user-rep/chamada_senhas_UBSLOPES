@@ -694,9 +694,9 @@ document.addEventListener("keydown", function (event) {
   }
 
   // Enter para clicar no botão
-  if (event.key === 'Enter' && botaoSelecionado) {
-    botaoSelecionado.click();
-  }
+  if (event.key === 'Enter') { 
+}
+
 });
 
 
