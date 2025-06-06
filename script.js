@@ -14,6 +14,12 @@ function aplicarDestaqueSenha(data) {
       const num = parseInt(match[1], 10);
       if (num <= limite) {
         btn.classList.add(classeDestaque);
+	       // Scroll apenas se for a maior senha chamada
+        if (num === limite) {
+          setTimeout(() => {
+            btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 100);
+        }
       }
     }
   });
@@ -32,6 +38,11 @@ function aplicarDestaqueSenha(data) {
           const num = parseInt(match[1], 10);
           if (num <= limiteSincronizada) {
             btn.classList.add(classeDestaque);
+		    if (num === limiteSincronizada) {
+              setTimeout(() => {
+                btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }, 100);
+            }  
           }
         }
       });
