@@ -87,48 +87,70 @@
     Desenvolvido por Egalon - Maio 2025 - Versão 0
   </footer>
 
-	<!-- Botão para mostrar/ocultar -->
-<button onclick="toggleEncarte()" style="margin: 10px; padding: 10px 20px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+<!-- Botão para abrir o modal -->
+<button onclick="abrirModal()" style="margin: 10px; padding: 10px 20px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
   ❔ Ajuda / Atalhos
 </button>
 
-<!-- Encarte de Atalhos (inicialmente oculto) -->
-<div id="encarte-atalhos" style="display: none; font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; border: 2px solid #ccc; border-radius: 10px; max-width: 800px; margin: 20px auto;">
-  <h2 style="text-align: center;">🧾 Encarte de Atalhos – Sistema de Chamada de Senhas</h2>
-  <hr>
+<!-- Fundo escurecido e modal -->
+<div id="modal-fundo" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 1000;">
+  <div style="position: relative; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; width: 90%; max-width: 800px;">
+    
+    <h2 style="text-align: center;">🧾 Encarte de Atalhos – Sistema de Chamada</h2>
+    <hr>
 
-  <h3>🔁 Repetir Última Senha</h3>
-  <p><strong>R</strong> → Repete a última senha chamada em voz alta.</p>
+    <h3>🔁 Repetir Última Senha</h3>
+    <p><strong>R</strong> → Repete a última senha chamada.</p>
 
-  <h3>🔢 Chamar Nova Senha</h3>
-  <ul>
-    <li><strong>N</strong> + <strong>1</strong> → Normal – Guichê 1</li>
-    <li><strong>N</strong> + <strong>2</strong> → Normal – Guichê 2</li>
-    <li><strong>N</strong> + <strong>3</strong> → Normal – Pós Consulta</li>
-    <li><strong>P</strong> + <strong>1</strong> → Preferencial – Guichê 1</li>
-    <li><strong>P</strong> + <strong>2</strong> → Preferencial – Guichê 2</li>
-    <li><strong>P</strong> + <strong>3</strong> → Preferencial – Pós Consulta</li>
-  </ul>
+    <h3>🔢 Chamar Nova Senha</h3>
+    <ul>
+      <li><strong>N</strong> + <strong>1</strong> → Normal – Guichê 1</li>
+      <li><strong>N</strong> + <strong>2</strong> → Normal – Guichê 2</li>
+      <li><strong>N</strong> + <strong>3</strong> → Normal – Pós Consulta</li>
+      <li><strong>P</strong> + <strong>1</strong> → Preferencial – Guichê 1</li>
+      <li><strong>P</strong> + <strong>2</strong> → Preferencial – Guichê 2</li>
+      <li><strong>P</strong> + <strong>3</strong> → Preferencial – Pós Consulta</li>
+    </ul>
 
-  <h3>🧭 Navegação</h3>
-  <ul>
-    <li><strong>Setas</strong> → Navega entre os botões de senha</li>
-    <li><strong>Enter</strong> → Chama a senha em foco</li>
-  </ul>
+    <h3>🧭 Navegação</h3>
+    <ul>
+      <li><strong>Setas</strong> → Navega entre botões de senha</li>
+      <li><strong>Enter</strong> → Chama a senha em foco</li>
+    </ul>
 
-  <h3>🗣️ Por Nome</h3>
-  <p>Digite o nome e pressione Enter ou clique no botão do guichê.</p>
+    <h3>🗣️ Por Nome</h3>
+    <p>Digite o nome e pressione Enter ou clique em um guichê.</p>
 
-  <h3>📁 Exportar Histórico</h3>
-  <p>Use o botão <strong>Exportar CSV</strong>.</p>
+    <h3>📁 Exportar</h3>
+    <p>Use o botão <strong>Exportar CSV</strong>.</p>
+
+    <!-- Botão fechar -->
+    <div style="text-align: center; margin-top: 20px;">
+      <button onclick="fecharModal()" style="padding: 10px 30px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Fechar</button>
+    </div>
+
+  </div>
 </div>
 
+
 <script>
-function toggleEncarte() {
-  const encarte = document.getElementById('encarte-atalhos');
-  encarte.style.display = (encarte.style.display === 'none') ? 'block' : 'none';
+function abrirModal() {
+  document.getElementById("modal-fundo").style.display = "block";
+}
+
+function fecharModal() {
+  document.getElementById("modal-fundo").style.display = "none";
+}
+
+// Também fecha se clicar fora do modal
+window.onclick = function(event) {
+  const modal = document.getElementById("modal-fundo");
+  if (event.target === modal) {
+    modal.style.display = "none";
+  }
 }
 </script>
+
 
   <script src="script.js"></script>
 </body>
