@@ -1,3 +1,5 @@
+let paginaCarregando = true;
+
 function aplicarDestaqueSenha(data) {
   const { idColuna, numeroSenha, classeDestaque } = data;
 
@@ -59,19 +61,19 @@ botoesOutro.forEach(btn => {
     }
   }
 
-  // Atualiza os campos "Última Senha"
-  const texto = Array.from(coluna.querySelectorAll('button'))
-    .find(btn => btn.textContent.includes(`Senha ${numeroSenha} -`))?.textContent;
-  if (texto) {
-    if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(texto);
-    else atualizarUltimaSenhaNormal(texto);
+  // Atualiza os boxes SOMENTE se não estiver carregando a página
+  if (!paginaCarregando && textoSenha) {
+    if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(textoSenha);
+    else atualizarUltimaSenhaNormal(textoSenha);
   }
 }
 
 
 firebase.database().ref('ultimaSenhaChamada').on('value', (snapshot) => {
   const data = snapshot.val();
-  if (!data || paginaCarregando) return;
+  if (!data) return;
+  aplicarDestaqueSenha(data);
+  atualizarCaixasUltimaSenha(data);
   aplicarDestaqueSenha(data);
 });
 
