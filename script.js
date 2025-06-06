@@ -636,3 +636,17 @@ function esperarSegundoKey(tipo) {
   document.addEventListener('keydown', segundaLetra);
 }
    
+function repetirUltimaSenha() {
+  if (!ultimaSenhaChamada) return;
+
+  const texto = ultimaSenhaChamada.textContent;
+  const isPreferencial = texto.toLowerCase().includes("preferencial");
+  const numeroSenha = parseInt(texto.match(/Senha (\d+)/)?.[1], 10);
+  const destino = texto.split(" - ")[1];
+
+  const textoFalado = isPreferencial
+    ? `Senha ${numeroSenha}, preferencial, ${destino}`
+    : `Senha ${numeroSenha}, normal, ${destino}`;
+
+  falar(textoFalado);
+}
