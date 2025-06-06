@@ -58,16 +58,6 @@ botoesOutro.forEach(btn => {
       }
     }
   }
-	// Atualiza os campos "Última Senha" apenas se for a maior senha da coluna
-  if (numeroSenha === limite) {
-    const texto = Array.from(coluna.querySelectorAll('button'))
-      .find(btn => btn.textContent.includes(`Senha ${numeroSenha} -`))?.textContent;
-
-    if (texto) {
-      if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(texto);
-      else atualizarUltimaSenhaNormal(texto);
-    }
-  }
 }
 
 firebase.database().ref('ultimaSenhaChamada').on('value', (snapshot) => {
@@ -84,6 +74,27 @@ function atualizarCaixasUltimaSenha(data) {
     atualizarUltimaSenhaPreferencial(textoSenha);
   } else if (idColuna.includes('normal')) {
     atualizarUltimaSenhaNormal(textoSenha);
+  }
+}
+
+async function atualizarBoxesUltimaSenhaComBaseNoFirebase() {
+  const snapshot = await firebase.database().ref('maioresSenhasPorColuna').get();
+  if (!snapshot.exists()) return;
+
+  const estado = snapshot.val();
+
+  for (let idColuna in estado) {
+    const maior = estado[idColuna];
+    const coluna = document.getElementById(idColuna);
+    if (!coluna) continue;
+
+    const botao = Array.from(coluna.querySelectorAll('button'))
+      .find(btn => btn.textContent.includes(`Senha ${maior} -`));
+
+    if (botao) {
+      if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(botao.textContent);
+      else atualizarUltimaSenhaNormal(botao.textContent);
+    }
   }
 }
 
@@ -522,6 +533,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     await limparSenhas();
   } else {
     await restaurarEstadoSenhasFirebase();
+    await atualizarBoxesUltimaSenhaComBaseNoFirebase();	  
   }
 });
 
