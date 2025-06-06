@@ -58,17 +58,6 @@ botoesOutro.forEach(btn => {
       }
     }
   }
-
-  // Atualiza os campos "Última Senha"
-   if (numeroSenha === limite) {
-    const texto = Array.from(coluna.querySelectorAll('button'))
-      .find(btn => btn.textContent.includes(`Senha ${numeroSenha} -`))?.textContent;
-
-    if (texto) {
-      if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(texto);
-      else atualizarUltimaSenhaNormal(texto);
-    }
-  }
 }
 
 firebase.database().ref('ultimaSenhaChamada').on('value', (snapshot) => {
