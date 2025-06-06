@@ -1,3 +1,5 @@
+window.speechSynthesis.cancel(); // Cancela qualquer fala travada anterior
+
 function aplicarDestaqueSenha(data) {
   const { idColuna, numeroSenha, classeDestaque } = data;
 
@@ -178,7 +180,20 @@ function carregarVozes(callback) {
   tentarCarregar();
 }
 
+const filaDeFalas = [];
+let falandoAgora = false;
+
 function falar(texto) {
+  filaDeFalas.push(texto);
+  processarFilaDeFalas();
+}
+
+function processarFilaDeFalas() {
+  if (falandoAgora || filaDeFalas.length === 0) return;
+
+  falandoAgora = true;
+  const texto = filaDeFalas.shift();
+
   const synth = window.speechSynthesis;
   const msg = new SpeechSynthesisUtterance();
   msg.text = texto;
@@ -189,13 +204,12 @@ function falar(texto) {
 
   carregarVozes((vozes) => {
     const voz = vozes.find(v => v.name === vozSelecionada);
+    if (voz) msg.voice = voz;
 
-    if (voz) {
-      msg.voice = voz;
-      console.log(`✅ Usando voz: ${voz.name}`);
-    } else {
-      console.warn(`⚠️ Voz "${vozSelecionada}" não encontrada. Usando voz padrão.`);
-    }
+    msg.onend = () => {
+      falandoAgora = false;
+      setTimeout(processarFilaDeFalas, 100); // dá um pequeno intervalo antes da próxima
+    };
 
     synth.speak(msg);
   });
