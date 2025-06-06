@@ -9,13 +9,15 @@ function aplicarDestaqueSenha(data) {
 
   const botoes = Array.from(coluna.querySelectorAll('button'));
   let botaoMaior = null;	
-  botoes.forEach(btn => {
+botoes.forEach(btn => {
     const match = btn.textContent.match(/Senha (\d+)/);
     if (match) {
       const num = parseInt(match[1], 10);
       if (num <= limite) {
         btn.classList.add(classeDestaque);
         if (num === limite) botaoMaior = btn;
+      } else {
+        btn.classList.remove('botao-destacado-normal', 'botao-destacado-preferencial');
       }
     }
   });
@@ -23,7 +25,7 @@ function aplicarDestaqueSenha(data) {
   if (botaoMaior) {
     setTimeout(() => {
       botaoMaior.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
+    }, 200);
   }
 
   const idColunaSincronizada = obterColunaSincronizada(idColuna);
@@ -43,6 +45,8 @@ botoesOutro.forEach(btn => {
           if (num <= limiteSincronizada) {
             btn.classList.add(classeDestaque);
             if (num === limiteSincronizada) botaoMaiorOutro = btn;
+          } else {
+            btn.classList.remove('botao-destacado-normal', 'botao-destacado-preferencial');
           }
         }
       });
@@ -50,7 +54,7 @@ botoesOutro.forEach(btn => {
       if (botaoMaiorOutro) {
         setTimeout(() => {
           botaoMaiorOutro.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 100);
+        }, 200);
       }
     }
   }
@@ -399,6 +403,12 @@ function registrarChamadaFirebase(idColuna, numeroSenha, classeDestaque) {
   });
 }
 
+// Impede scroll nativo ao clicar manualmente em senha menor
+function bloquearScrollAoClicarEmBotao(botao) {
+  botao.addEventListener('mousedown', e => {
+    e.preventDefault();
+  });
+}
 
 for (let i = 1; i <= 999; i++) {
   const numero = i.toString().padStart(1, '0');
