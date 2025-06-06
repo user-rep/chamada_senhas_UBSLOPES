@@ -570,14 +570,9 @@ async function chamarSenhaSincronizada(tipo, guiche) {
   const botao = botoes.find(b => b.textContent.includes(`Senha ${contador} -`));
 
   if (botao) {
-    botao.click();
-	firebase.database().ref('ultimaSenhaChamada').set({
-  idColuna: idColuna,
-  numeroSenha: numeroSenha,
-  classeDestaque: classeDestaque,
-  timestamp: Date.now()
-});
-
+    ultimaSenhaChamada = botao;
+botao.click();
+	  
   } else {
     console.error('Botão não encontrado:', `Senha ${contador} - Guichê ${guiche}`);
   }
@@ -604,9 +599,9 @@ function repetirUltimaSenha() {
   if (!ultimaSenhaChamada) return;
 
   const texto = ultimaSenhaChamada.textContent;
-  const idColuna = ultimaSenhaChamada.closest('.coluna').id;
-  const isPreferencial = idColuna.includes("preferencial");
+  const idColuna = ultimaSenhaChamada.closest('.coluna')?.id || '';
 
+  const isPreferencial = idColuna.includes("preferencial");
   const numeroSenha = parseInt(texto.match(/Senha (\d+)/)?.[1], 10);
   const destino = texto.split(" - ")[1];
 
