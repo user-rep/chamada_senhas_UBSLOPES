@@ -541,7 +541,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     await restaurarEstadoSenhasFirebase();
     await atualizarBoxesUltimaSenhaComBaseNoFirebase();	  
   }
-    let paginaCarregando = true;
+    let paginaCarregando = false;
 });
 
 function forcarSelecaoGuiche() {
