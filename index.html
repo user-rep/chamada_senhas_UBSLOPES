@@ -90,7 +90,7 @@
 <!-- Botão de ajuda fixo no canto superior direito -->
 <button onclick="toggleEncarte()" style="
   position: fixed;
-  top: 40px;
+  top: 60px;
   right: 10px;
   padding: 6px 12px;
   font-size: 14px;
@@ -105,8 +105,21 @@
 </button>
 
 
-<!-- Encarte de Atalhos (inicialmente oculto) -->
-<div id="encarte-atalhos" style="display: none; font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; border: 2px solid #ccc; border-radius: 10px; max-width: 800px; margin: 20px auto;">
+<!-- Encarte de Atalhos (com rolagem vertical) -->
+<div id="encarte-atalhos" style="
+  display: none;
+  font-family: Arial, sans-serif;
+  background: #f9f9f9;
+  padding: 20px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  max-width: 800px;
+  margin: 20px auto;
+  max-height: 80vh;         /* Altura máxima visível */
+  overflow-y: auto;         /* Ativa rolagem vertical */
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+">
   <h2 style="text-align: center;">🧾 Encarte de Atalhos – Sistema de Chamada de Senhas</h2>
   <hr>
 
