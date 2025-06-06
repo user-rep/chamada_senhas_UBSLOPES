@@ -604,7 +604,9 @@ function repetirUltimaSenha() {
   if (!ultimaSenhaChamada) return;
 
   const texto = ultimaSenhaChamada.textContent;
-  const isPreferencial = texto.toLowerCase().includes("preferencial");
+  const idColuna = ultimaSenhaChamada.closest('.coluna').id;
+  const isPreferencial = idColuna.includes("preferencial");
+
   const numeroSenha = parseInt(texto.match(/Senha (\d+)/)?.[1], 10);
   const destino = texto.split(" - ")[1];
 
