@@ -1,3 +1,5 @@
+let paginaCarregando = true;
+
 function aplicarDestaqueSenha(data) {
   const { idColuna, numeroSenha, classeDestaque } = data;
 
@@ -66,6 +68,11 @@ botoesOutro.forEach(btn => {
     if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(texto);
     else atualizarUltimaSenhaNormal(texto);
   }
+	if (!paginaCarregando && texto) {
+  if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(texto);
+  else atualizarUltimaSenhaNormal(texto);
+}
+
 }
 
 
@@ -135,7 +142,9 @@ function voltarAoFundo() {
 }
 
 async function limparSenhas() {
-  
+  atualizarUltimaSenhaNormal("");
+  atualizarUltimaSenhaPreferencial("");
+	
   await firebase.database().ref('contadorNormal').set(0);
   await firebase.database().ref('contadorPreferencial').set(0);
   await firebase.database().ref('maioresSenhasPorColuna').remove();
@@ -509,6 +518,9 @@ window.speechSynthesis.onvoiceschanged = () => {
 };
 
 document.addEventListener("DOMContentLoaded", async function () {
+  atualizarUltimaSenhaNormal("");
+  atualizarUltimaSenhaPreferencial("");
+	
   forcarSelecaoGuiche();
   const confirmar = confirm("Deseja reiniciar a contagem de senhas?");
   if (confirmar) {
@@ -516,6 +528,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   } else {
     await restaurarEstadoSenhasFirebase();
   }
+	paginaCarregando = false;
 });
 
 function forcarSelecaoGuiche() {
