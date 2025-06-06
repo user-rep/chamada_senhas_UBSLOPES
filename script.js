@@ -606,10 +606,10 @@ function chamarSenhaLocal(tipo) {
 }
 
 function repetirUltimaSenha() {
-  if (!ultimaSenhaChamada || !ultimaSenhaChamadaIdColuna) return;
+  if (!ultimaSenhaChamada) return;
 
   const texto = ultimaSenhaChamada.textContent;
-  const isPreferencial = ultimaSenhaChamadaIdColuna.includes("preferencial");
+  const isPreferencial = texto.toLowerCase().includes("preferencial");
   const numeroSenha = parseInt(texto.match(/Senha (\d+)/)?.[1], 10);
   const destino = texto.split(" - ")[1];
 
