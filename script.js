@@ -60,18 +60,13 @@ botoesOutro.forEach(btn => {
   }
 
   // Atualiza os campos "Última Senha"
- const limite = maioresSenhasPorColuna[idColuna];
-if (numeroSenha === limite) {
-    const texto = Array.from(coluna.querySelectorAll('button'))
-      .find(btn => btn.textContent.includes(`Senha ${numeroSenha} -`))?.textContent;
-
-    if (texto) {
-      if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(texto);
-      else atualizarUltimaSenhaNormal(texto);
-    }
+  const texto = Array.from(coluna.querySelectorAll('button'))
+    .find(btn => btn.textContent.includes(`Senha ${numeroSenha} -`))?.textContent;
+  if (texto) {
+    if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(texto);
+    else atualizarUltimaSenhaNormal(texto);
   }
 }
-
 
 
 firebase.database().ref('ultimaSenhaChamada').on('value', (snapshot) => {
@@ -244,12 +239,16 @@ function chamarNome(guiche) {
 
 function atualizarUltimaSenhaNormal(texto) {
   const div = document.getElementById('senha-normal');
- if (div && texto) div.textContent = texto;
+  if (div) {
+    div.textContent = texto;
+  }
 }
 
 function atualizarUltimaSenhaPreferencial(texto) {
   const div = document.getElementById('senha-preferencial');
-if (div && texto) div.textContent = texto;
+  if (div) {
+    div.textContent = texto;
+  }
 }
 
 const ultimosBotoesPorColuna = {};
@@ -410,14 +409,6 @@ function bloquearScrollAoClicarEmBotao(botao) {
     e.preventDefault();
   });
 }
-
-// Limpa os campos de última senha ao reiniciar manualmente
-function limparCaixasUltimaSenha() {
-  atualizarUltimaSenhaNormal('');
-  atualizarUltimaSenhaPreferencial('');
-}
-	
-	
 
 for (let i = 1; i <= 999; i++) {
   const numero = i.toString().padStart(1, '0');
