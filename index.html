@@ -105,23 +105,26 @@
 </button>
 
 
-<!-- Encarte de Atalhos (com rolagem vertical) -->
+<!-- Encarte de Atalhos em Tela Cheia -->
 <div id="encarte-atalhos" style="
   display: none;
-  font-family: Arial, sans-serif;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background: #f9f9f9;
-  padding: 20px;
-  border: 2px solid #ccc;
-  border-radius: 10px;
-  max-width: 800px;
-  margin: 20px auto;
-  max-height: 80vh;         /* Altura máxima visível */
-  overflow-y: auto;         /* Ativa rolagem vertical */
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   z-index: 9999;
+  font-family: Arial, sans-serif;
+  padding: 40px;
+  overflow-y: auto;
+  box-sizing: border-box;
 ">
   <h2 style="text-align: center;">🧾 Encarte de Atalhos – Sistema de Chamada de Senhas</h2>
   <hr>
+  <!-- Aqui continua o conteúdo do encarte -->
+</div>
+
 
   <h3>🔁 Repetir Última Senha</h3>
   <p><strong>R</strong> → Repete a última senha chamada em voz alta.</p>
