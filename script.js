@@ -59,11 +59,12 @@ if (!paginaCarregando && botaoMaiorOutro) {
 }
     }
   }
-	// Atualiza os boxes SOMENTE se não estiver carregando a página
-  if (!paginaCarregando && textoSenha) {
-    if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(textoSenha);
-    else atualizarUltimaSenhaNormal(textoSenha);
-  }
+	// Atualiza os campos "Última Senha"
+  const texto = Array.from(coluna.querySelectorAll('button'))
+    .find(btn => btn.textContent.includes(`Senha ${numeroSenha} -`))?.textContent;
+  if (texto) {
+    if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(texto);
+    else atualizarUltimaSenhaNormal(texto);
 }
 
 firebase.database().ref('ultimaSenhaChamada').on('value', (snapshot) => {
