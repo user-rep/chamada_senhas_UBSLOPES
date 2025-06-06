@@ -22,12 +22,11 @@ botoes.forEach(btn => {
     }
   });
 
-  if (botaoMaior) {
-    setTimeout(() => {
-      botaoMaior.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 200);
-  }
-
+ if (!paginaCarregando && botaoMaior) {
+  setTimeout(() => {
+    botaoMaior.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 200);
+}
   const idColunaSincronizada = obterColunaSincronizada(idColuna);
   if (idColunaSincronizada) {
     maioresSenhasPorColuna[idColunaSincronizada] = Math.max(maioresSenhasPorColuna[idColunaSincronizada] || 0, numeroSenha);
@@ -51,11 +50,11 @@ botoesOutro.forEach(btn => {
         }
       });
 
-      if (botaoMaiorOutro) {
-        setTimeout(() => {
-          botaoMaiorOutro.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 200);
-      }
+if (!paginaCarregando && botaoMaiorOutro) {
+  setTimeout(() => {
+    botaoMaiorOutro.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 200);
+}
     }
   }
 	// Atualiza os boxes SOMENTE se não estiver carregando a página
