@@ -11,6 +11,8 @@ function aplicarDestaqueSenha(data) {
     btn.classList.remove('botao-destacado-normal', 'botao-destacado-preferencial');
   });
 
+  let botaoPrincipal = null;
+
   // Aplica destaque até a senha chamada
   botoes.forEach(btn => {
     const match = btn.textContent.match(/Senha (\d+)/);
@@ -18,14 +20,19 @@ function aplicarDestaqueSenha(data) {
       const num = parseInt(match[1], 10);
       if (num <= numeroSenha) {
         btn.classList.add(classeDestaque);
-
-        // Quando for exatamente a senha chamada, centraliza o scroll
-        if (num === numeroSenha) {
-          btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+      }
+      if (num === numeroSenha) {
+        botaoPrincipal = btn;
       }
     }
   });
+
+  // Faz o scroll apenas depois que todos os destaques forem aplicados
+  if (botaoPrincipal) {
+    setTimeout(() => {
+      botaoPrincipal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  }
 
   // Sincroniza coluna oposta
   const idColunaSincronizada = obterColunaSincronizada(idColuna);
@@ -35,23 +42,29 @@ function aplicarDestaqueSenha(data) {
 
     const botoesOutro = Array.from(colunaOutro.querySelectorAll('button'));
 
+    let botaoOutro = null;
+
     botoesOutro.forEach(btn => {
       const match = btn.textContent.match(/Senha (\d+)/);
       if (match) {
         const num = parseInt(match[1], 10);
         if (num <= numeroSenha) {
           btn.classList.add(classeDestaque);
-
-          // Quando for exatamente a senha chamada, centraliza o scroll também na coluna oposta
-          if (num === numeroSenha) {
-            btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
+        }
+        if (num === numeroSenha) {
+          botaoOutro = btn;
         }
       }
     });
+
+    // Faz scroll na coluna oposta também
+    if (botaoOutro) {
+      setTimeout(() => {
+        botaoOutro.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
   }
 }
-
 
 
 firebase.database().ref('ultimaSenhaChamada').on('value', (snapshot) => {
