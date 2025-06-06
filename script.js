@@ -1,5 +1,4 @@
-let ultimaSenhaChamada = null;
-let ultimaSenhaChamadaIdColuna = null;
+
 
 function aplicarDestaqueSenha(data) {
   const { idColuna, numeroSenha, classeDestaque } = data;
