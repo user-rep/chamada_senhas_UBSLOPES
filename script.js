@@ -16,8 +16,13 @@ function aplicarDestaqueSenha(data) {
     const match = btn.textContent.match(/Senha (\d+)/);
     if (match) {
       const num = parseInt(match[1], 10);
-      if (num <= data.numeroSenha) {
+      if (num <= numeroSenha) {
         btn.classList.add(classeDestaque);
+
+        // Quando for exatamente a senha chamada, centraliza o scroll
+        if (num === numeroSenha) {
+          btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
       }
     }
   });
@@ -34,8 +39,13 @@ function aplicarDestaqueSenha(data) {
       const match = btn.textContent.match(/Senha (\d+)/);
       if (match) {
         const num = parseInt(match[1], 10);
-        if (num <= data.numeroSenha) {
+        if (num <= numeroSenha) {
           btn.classList.add(classeDestaque);
+
+          // Quando for exatamente a senha chamada, centraliza o scroll também na coluna oposta
+          if (num === numeroSenha) {
+            btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
         }
       }
     });
