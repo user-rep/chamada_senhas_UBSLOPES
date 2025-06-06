@@ -184,6 +184,13 @@ function criarBotao(idColuna, texto, classe) {
 
   botao.onclick = () => {
 	  
+	  salvarUltimaSenhaFirebase(idColuna, numeroSenha);
+
+    const colunaSincronizadaID = obterColunaSincronizada(idColuna);
+    if (colunaSincronizadaID) {
+        salvarUltimaSenhaFirebase(colunaSincronizadaID, numeroSenha);
+    }
+	
     falar(textoFalado);
 
     const agora = new Date();
@@ -250,13 +257,6 @@ function criarBotao(idColuna, texto, classe) {
 
     botao.scrollIntoView({ behavior: 'smooth', block: 'center' });
     ultimaSenhaChamada = botao;
-	
-	salvarUltimaSenhaFirebase(idColuna, numeroSenha);
-
-    const colunaSincronizadaID = obterColunaSincronizada(idColuna);
-    if (colunaSincronizadaID) {
-        salvarUltimaSenhaFirebase(colunaSincronizadaID, numeroSenha);
-    }
 
   };
 
@@ -383,7 +383,12 @@ window.speechSynthesis.onvoiceschanged = () => {
   carregarVozes(() => {});
 };
 
-for (let i = 1; i <= 999; i++) {
+
+
+
+document.addEventListener("DOMContentLoaded", async function () {
+	
+  for (let i = 1; i <= 999; i++) {
   const numero = i.toString().padStart(1, '0');
   criarBotao("coluna-normal-guiche1", `Senha ${numero} - Guichê 1`, 'botao-preto');
   criarBotao("coluna-normal-guiche2", `Senha ${numero} - Guichê 2`, 'botao-preto');
@@ -396,10 +401,10 @@ for (let i = 1; i <= 999; i++) {
   criarBotao("coluna-preferencial-guiche2", `Senha ${numero} - Guichê 2`, 'botao-vermelho');
   criarBotao("coluna-preferencial-posconsulta", `Senha ${numero} - Pós Consulta`, 'botao-vermelho');
 }
-
-
-document.addEventListener("DOMContentLoaded", async function () {
+  
   forcarSelecaoGuiche();
+  
+
   
   const confirmar = confirm("Deseja reiniciar a contagem de senhas?");
   if (confirmar) {
