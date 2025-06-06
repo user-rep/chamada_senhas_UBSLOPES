@@ -692,11 +692,6 @@ document.addEventListener("keydown", function (event) {
       }
     }
   }
-
-  // Enter para clicar no botão
-  if (event.key === 'Enter') { 
-}
-
 });
 
 
