@@ -1,73 +1,50 @@
 function aplicarDestaqueSenha(data) {
   const { idColuna, numeroSenha, classeDestaque } = data;
 
+  maioresSenhasPorColuna[idColuna] = Math.max(maioresSenhasPorColuna[idColuna] || 0, numeroSenha);
+
+  const limite = maioresSenhasPorColuna[idColuna];
   const coluna = document.getElementById(idColuna);
   if (!coluna) return;
 
   const botoes = Array.from(coluna.querySelectorAll('button'));
-
-// ✅ Usar o maior número salvo (não o da última senha clicada, se for menor)
-  const maiorNumero = maioresSenhasPorColuna[idColuna] || numeroSenha;
-
-  // Limpa destaques anteriores
-  botoes.forEach(btn => {
-    btn.classList.remove('botao-destacado-normal', 'botao-destacado-preferencial');
-  });
-
-  let botaoPrincipal = null;
-
-  // Aplica destaque até a senha chamada
   botoes.forEach(btn => {
     const match = btn.textContent.match(/Senha (\d+)/);
     if (match) {
       const num = parseInt(match[1], 10);
-      if (num <= numeroSenha) {
+      if (num <= limite) {
         btn.classList.add(classeDestaque);
-      }
-      if (num === numeroSenha) {
-        botaoPrincipal = btn;
       }
     }
   });
 
-  // Faz o scroll apenas depois que todos os destaques forem aplicados
-  if (botaoPrincipal) {
-    setTimeout(() => {
-      botaoPrincipal.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
-  }
-
-  // Sincroniza coluna oposta
   const idColunaSincronizada = obterColunaSincronizada(idColuna);
   if (idColunaSincronizada) {
+    maioresSenhasPorColuna[idColunaSincronizada] = Math.max(maioresSenhasPorColuna[idColunaSincronizada] || 0, numeroSenha);
+
+    const limiteSincronizada = maioresSenhasPorColuna[idColunaSincronizada];
     const colunaOutro = document.getElementById(idColunaSincronizada);
-    if (!colunaOutro) return;
-
-    const botoesOutro = Array.from(colunaOutro.querySelectorAll('button'));
-
-    let botaoOutro = null;
-
-    botoesOutro.forEach(btn => {
-      const match = btn.textContent.match(/Senha (\d+)/);
-      if (match) {
-        const num = parseInt(match[1], 10);
-        if (num <= numeroSenha) {
-          btn.classList.add(classeDestaque);
+    if (colunaOutro) {
+      const botoesOutro = Array.from(colunaOutro.querySelectorAll('button'));
+      botoesOutro.forEach(btn => {
+        const match = btn.textContent.match(/Senha (\d+)/);
+        if (match) {
+          const num = parseInt(match[1], 10);
+          if (num <= limiteSincronizada) {
+            btn.classList.add(classeDestaque);
+          }
         }
-        if (num === numeroSenha) {
-          botaoOutro = btn;
-        }
-      }
-    });
-
-    // Faz scroll na coluna oposta também
-    if (botaoOutro) {
-      setTimeout(() => {
-        botaoOutro.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100);
+      });
     }
   }
-	atualizarCaixasUltimaSenha(data); // Garante que a caixa também é atualizada
+
+  // Atualiza os campos "Última Senha"
+  const texto = Array.from(coluna.querySelectorAll('button'))
+    .find(btn => btn.textContent.includes(`Senha ${numeroSenha} -`))?.textContent;
+  if (texto) {
+    if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(texto);
+    else atualizarUltimaSenhaNormal(texto);
+  }
 }
 
 
