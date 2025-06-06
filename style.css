@@ -7,6 +7,7 @@
       display: flex;
       flex-direction: column;
       height: 100vh; /* Garante que o body ocupe toda a altura da tela */
+      overflow: hidden;	
       
     }
 
