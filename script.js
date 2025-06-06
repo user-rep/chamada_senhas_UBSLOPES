@@ -383,10 +383,7 @@ window.speechSynthesis.onvoiceschanged = () => {
   carregarVozes(() => {});
 };
 
-document.addEventListener("DOMContentLoaded", async function () {
-  forcarSelecaoGuiche();
-  
-  for (let i = 1; i <= 999; i++) {
+for (let i = 1; i <= 999; i++) {
   const numero = i.toString().padStart(1, '0');
   criarBotao("coluna-normal-guiche1", `Senha ${numero} - Guichê 1`, 'botao-preto');
   criarBotao("coluna-normal-guiche2", `Senha ${numero} - Guichê 2`, 'botao-preto');
@@ -399,7 +396,10 @@ for (let i = 1; i <= 999; i++) {
   criarBotao("coluna-preferencial-guiche2", `Senha ${numero} - Guichê 2`, 'botao-vermelho');
   criarBotao("coluna-preferencial-posconsulta", `Senha ${numero} - Pós Consulta`, 'botao-vermelho');
 }
-  
+
+
+document.addEventListener("DOMContentLoaded", async function () {
+  forcarSelecaoGuiche();
   
   const confirmar = confirm("Deseja reiniciar a contagem de senhas?");
   if (confirmar) {
