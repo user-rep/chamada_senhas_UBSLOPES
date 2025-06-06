@@ -6,9 +6,6 @@ function aplicarDestaqueSenha(data) {
 
   const botoes = Array.from(coluna.querySelectorAll('button'));
 
-// ✅ Usar o maior número salvo (não o da última senha clicada, se for menor)
-  const maiorNumero = maioresSenhasPorColuna[idColuna] || numeroSenha;
-
   // Limpa destaques anteriores
   botoes.forEach(btn => {
     btn.classList.remove('botao-destacado-normal', 'botao-destacado-preferencial');
@@ -67,7 +64,6 @@ function aplicarDestaqueSenha(data) {
       }, 100);
     }
   }
-	atualizarCaixasUltimaSenha(data); // Garante que a caixa também é atualizada
 }
 
 
@@ -76,18 +72,8 @@ firebase.database().ref('ultimaSenhaChamada').on('value', (snapshot) => {
   if (!data) return;
 
   aplicarDestaqueSenha(data);
-	atualizarCaixasUltimaSenha(data);
 });
 
-function atualizarCaixasUltimaSenha(data) {
-  const { idColuna, textoSenha } = data;
-
-  if (idColuna.includes('preferencial')) {
-    atualizarUltimaSenhaPreferencial(textoSenha);
-  } else if (idColuna.includes('normal')) {
-    atualizarUltimaSenhaNormal(textoSenha);
-  }
-}
 
 const historicoChamadas = [];
 
@@ -270,89 +256,83 @@ function criarBotao(idColuna, texto, classe) {
     ? `Senha ${numeroSenha}, preferencial, ${destino}`
     : `Senha ${numeroSenha}, normal, ${destino}`;
 
-botao.onclick = () => {
-  falar(textoFalado);
+  botao.onclick = () => {
+	  
+    falar(textoFalado);
 
-  const agora = new Date();
-  historicoChamadas.push({
-    tipo: isPreferencial ? "Senha Preferencial" : "Senha Normal",
-    senha: texto,
-    guiche: destino,
-    data: agora.toLocaleDateString('pt-BR'),
-    hora: agora.toLocaleTimeString('pt-BR'),
-  });
+    const agora = new Date();
+    historicoChamadas.push({
+      tipo: isPreferencial ? "Senha Preferencial" : "Senha Normal",
+      senha: texto,
+      guiche: destino,
+      data: agora.toLocaleDateString('pt-BR'),
+      hora: agora.toLocaleTimeString('pt-BR'),
+    });
 
-  if (isPreferencial) {
-    atualizarUltimaSenhaPreferencial(texto);
-  } else {
-    atualizarUltimaSenhaNormal(texto);
-  }
+    if (isPreferencial) {
+      atualizarUltimaSenhaPreferencial(texto);
+    } else {
+      atualizarUltimaSenhaNormal(texto);
+    }
 
-  // 🔁 ATUALIZA histórico de maior senha chamada, se necessário
-  if (!maioresSenhasPorColuna[idColuna] || numeroSenha > maioresSenhasPorColuna[idColuna]) {
-    maioresSenhasPorColuna[idColuna] = numeroSenha;
-    salvarMaiorSenhaFirebase(idColuna, numeroSenha);
-    const tipo = isPreferencial ? 'preferencial' : 'normal';
-    atualizarContadorFirebaseSeMaior(tipo, numeroSenha);
-  }
+    const botoesNaColuna = Array.from(coluna.querySelectorAll('button'));
 
-  // ✅ Sempre usa o maior número já chamado (não o número clicado!)
-  const limite = maioresSenhasPorColuna[idColuna];
-  const classeDestaque = isPreferencial ? 'botao-destacado-preferencial' : 'botao-destacado-normal';
+    if (!maioresSenhasPorColuna[idColuna] || numeroSenha > maioresSenhasPorColuna[idColuna]) {
+      maioresSenhasPorColuna[idColuna] = numeroSenha;
+      salvarMaiorSenhaFirebase(idColuna, numeroSenha);
+      const tipo = isPreferencial ? 'preferencial' : 'normal';
+      atualizarContadorFirebaseSeMaior(tipo, numeroSenha);
 
-  const botoesNaColuna = Array.from(coluna.querySelectorAll('button'));
+    }
 
-  // 🔄 LIMPA e DESTACA baseado no maior chamado
-  botoesNaColuna.forEach(btn => {
-    btn.classList.remove('botao-destacado-normal', 'botao-destacado-preferencial');
-  });
+    const limite = maioresSenhasPorColuna[idColuna];
+    const classeDestaque = isPreferencial ? 'botao-destacado-preferencial' : 'botao-destacado-normal';
 
-  botoesNaColuna.forEach(btn => {
-    const match = btn.textContent.match(/Senha (\d+)/);
-    if (match) {
-      const num = parseInt(match[1], 10);
-      if (num <= limite) {
-        btn.classList.add(classeDestaque);
+    botoesNaColuna.forEach(btn => {
+      btn.classList.remove('botao-destacado-normal', 'botao-destacado-preferencial');
+    });
+
+    botoesNaColuna.forEach(btn => {
+      const match = btn.textContent.match(/Senha (\d+)/);
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (num <= limite) {
+          btn.classList.add(classeDestaque);
+        }
+      }
+    });
+
+    const colunaSincronizadaID = obterColunaSincronizada(idColuna);
+    if (colunaSincronizadaID) {
+      const colunaOutro = document.getElementById(colunaSincronizadaID);
+      if (colunaOutro) {
+        const botoesOutro = Array.from(colunaOutro.querySelectorAll('button'));
+        botoesOutro.forEach(btn => {
+          const match = btn.textContent.match(/Senha (\d+)/);
+          if (match) {
+            const num = parseInt(match[1], 10);
+            if (num <= limite) {
+              btn.classList.add(classeDestaque);
+              if (num === numeroSenha) {
+                btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }
+          }
+        });
       }
     }
-  });
 
-  // 🔁 Mesma lógica para a COLUNA SINCRONIZADA
-  const colunaSincronizadaID = obterColunaSincronizada(idColuna);
-  if (colunaSincronizadaID) {
-    const colunaOutro = document.getElementById(colunaSincronizadaID);
-    if (colunaOutro) {
-      const botoesOutro = Array.from(colunaOutro.querySelectorAll('button'));
-      botoesOutro.forEach(btn => {
-        btn.classList.remove('botao-destacado-normal', 'botao-destacado-preferencial');
-      });
-      botoesOutro.forEach(btn => {
-        const match = btn.textContent.match(/Senha (\d+)/);
-        if (match) {
-          const num = parseInt(match[1], 10);
-          if (num <= limite) {
-            btn.classList.add(classeDestaque);
-          }
-        }
-      });
-    }
-  }
-
-  // 🎯 Scroll apenas na senha clicada (não afeta os hovers)
-  botao.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-  // 📡 Envia ao Firebase
-  firebase.database().ref('ultimaSenhaChamada').set({
-    idColuna: idColuna,
-    numeroSenha: numeroSenha,
-    classeDestaque: classeDestaque,
-    textoSenha: texto,
-    timestamp: Date.now()
-  });
-
-  ultimaSenhaChamada = botao;
-};
-
+    botao.scrollIntoView({ behavior: 'smooth', block: 'center' });
+	
+	  firebase.database().ref('ultimaSenhaChamada').set({
+  idColuna: idColuna,
+  numeroSenha: numeroSenha,
+  classeDestaque: classeDestaque,
+  timestamp: Date.now()
+});
+	
+    ultimaSenhaChamada = botao;
+  };
 
   coluna.appendChild(botao);
 }
