@@ -1,5 +1,3 @@
-let paginaCarregando = true;
-
 function aplicarDestaqueSenha(data) {
   const { idColuna, numeroSenha, classeDestaque } = data;
 
@@ -24,11 +22,12 @@ botoes.forEach(btn => {
     }
   });
 
- if (!paginaCarregando && botaoMaior) {
-  setTimeout(() => {
-    botaoMaior.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 200);
-}
+  if (botaoMaior) {
+    setTimeout(() => {
+      botaoMaior.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 200);
+  }
+
   const idColunaSincronizada = obterColunaSincronizada(idColuna);
   if (idColunaSincronizada) {
     maioresSenhasPorColuna[idColunaSincronizada] = Math.max(maioresSenhasPorColuna[idColunaSincronizada] || 0, numeroSenha);
@@ -52,20 +51,23 @@ botoesOutro.forEach(btn => {
         }
       });
 
-if (!paginaCarregando && botaoMaiorOutro) {
-  setTimeout(() => {
-    botaoMaiorOutro.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 200);
-}
+      if (botaoMaiorOutro) {
+        setTimeout(() => {
+          botaoMaiorOutro.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 200);
+      }
     }
   }
-	// Atualiza os campos "Última Senha"
+
+  // Atualiza os campos "Última Senha"
   const texto = Array.from(coluna.querySelectorAll('button'))
     .find(btn => btn.textContent.includes(`Senha ${numeroSenha} -`))?.textContent;
   if (texto) {
     if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(texto);
     else atualizarUltimaSenhaNormal(texto);
+  }
 }
+
 
 firebase.database().ref('ultimaSenhaChamada').on('value', (snapshot) => {
   const data = snapshot.val();
@@ -81,27 +83,6 @@ function atualizarCaixasUltimaSenha(data) {
     atualizarUltimaSenhaPreferencial(textoSenha);
   } else if (idColuna.includes('normal')) {
     atualizarUltimaSenhaNormal(textoSenha);
-  }
-}
-
-async function atualizarBoxesUltimaSenhaComBaseNoFirebase() {
-  const snapshot = await firebase.database().ref('maioresSenhasPorColuna').get();
-  if (!snapshot.exists()) return;
-
-  const estado = snapshot.val();
-
-  for (let idColuna in estado) {
-    const maior = estado[idColuna];
-    const coluna = document.getElementById(idColuna);
-    if (!coluna) continue;
-
-    const botao = Array.from(coluna.querySelectorAll('button'))
-      .find(btn => btn.textContent.includes(`Senha ${maior} -`));
-
-    if (botao) {
-      if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(botao.textContent);
-      else atualizarUltimaSenhaNormal(botao.textContent);
-    }
   }
 }
 
@@ -273,8 +254,6 @@ function atualizarUltimaSenhaPreferencial(texto) {
 const ultimosBotoesPorColuna = {};
 const maioresSenhasPorColuna = {};
 
-
-
 function criarBotao(idColuna, texto, classe) {
   const coluna = document.getElementById(idColuna);
   const botao = document.createElement('button');
@@ -431,12 +410,6 @@ function bloquearScrollAoClicarEmBotao(botao) {
   });
 }
 
-// Limpa os campos de última senha ao reiniciar manualmente
-function limparCaixasUltimaSenha() {
-  atualizarUltimaSenhaNormal('');
-  atualizarUltimaSenhaPreferencial('');
-}
-
 for (let i = 1; i <= 999; i++) {
   const numero = i.toString().padStart(1, '0');
   criarBotao("coluna-normal-guiche1", `Senha ${numero} - Guichê 1`, 'botao-preto');
@@ -542,9 +515,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     await limparSenhas();
   } else {
     await restaurarEstadoSenhasFirebase();
-    await atualizarBoxesUltimaSenhaComBaseNoFirebase();	  
   }
-    paginaCarregando = false;
 });
 
 function forcarSelecaoGuiche() {
