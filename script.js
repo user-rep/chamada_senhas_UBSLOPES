@@ -268,6 +268,7 @@ function criarBotao(idColuna, texto, classe) {
     : `Senha ${numeroSenha}, normal, ${destino}`;
 
 botao.onclick = () => {
+  botao.dataset.tipoSenha = isPreferencial ? "preferencial" : "normal";
   falar(textoFalado);
 
   const agora = new Date();
@@ -599,18 +600,18 @@ function repetirUltimaSenha() {
   if (!ultimaSenhaChamada) return;
 
   const texto = ultimaSenhaChamada.textContent;
-  const idColuna = ultimaSenhaChamada.closest('.coluna')?.id || '';
+  const tipo = ultimaSenhaChamada.dataset.tipoSenha || "normal";
 
-  const isPreferencial = idColuna.includes("preferencial");
   const numeroSenha = parseInt(texto.match(/Senha (\d+)/)?.[1], 10);
   const destino = texto.split(" - ")[1];
 
-  const textoFalado = isPreferencial
+  const textoFalado = tipo === "preferencial"
     ? `Senha ${numeroSenha}, preferencial, ${destino}`
     : `Senha ${numeroSenha}, normal, ${destino}`;
 
   falar(textoFalado);
 }
+
 
 let enterPressionadoRecentemente = false;
 
