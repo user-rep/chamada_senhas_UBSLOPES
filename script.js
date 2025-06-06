@@ -570,33 +570,13 @@ async function chamarSenhaSincronizada(tipo, guiche) {
   const botao = botoes.find(b => b.textContent.includes(`Senha ${contador} -`));
 
   if (botao) {
-  const texto = botao.textContent;
-  const numeroSenha = parseInt(texto.match(/Senha (\d+)/)[1], 10);
-  const destino = texto.split(" - ")[1];
-  const isPreferencial = tipo === 'preferencial';
-  const classeDestaque = isPreferencial ? 'botao-destacado-preferencial' : 'botao-destacado-normal';
-
-  // Atualiza referências da última senha
-  ultimaSenhaChamada = botao;
-  ultimaSenhaChamadaIdColuna = idColuna;
-
-  // Faz a fala diretamente
-  const textoFalado = isPreferencial
-    ? `Senha ${numeroSenha}, preferencial, ${destino}`
-    : `Senha ${numeroSenha}, normal, ${destino}`;
-  falar(textoFalado);
-
-  // Atualiza Firebase e visuais
+  botao.click();
   firebase.database().ref('ultimaSenhaChamada').set({
     idColuna: idColuna,
     numeroSenha: numeroSenha,
     classeDestaque: classeDestaque,
-    textoSenha: texto,
     timestamp: Date.now()
   });
-
-  botao.click();
-	  
   } else {
     console.error('Botão não encontrado:', `Senha ${contador} - Guichê ${guiche}`);
   }
@@ -623,9 +603,12 @@ function repetirUltimaSenha() {
   if (!ultimaSenhaChamada) return;
 
   const texto = ultimaSenhaChamada.textContent;
-  const isPreferencial = texto.toLowerCase().includes("preferencial");
   const numeroSenha = parseInt(texto.match(/Senha (\d+)/)?.[1], 10);
   const destino = texto.split(" - ")[1];
+
+  // Verifica diretamente a qual coluna o botão pertence
+  const coluna = ultimaSenhaChamada.closest(".coluna");
+  const isPreferencial = coluna?.id?.includes("preferencial");
 
   const textoFalado = isPreferencial
     ? `Senha ${numeroSenha}, preferencial, ${destino}`
