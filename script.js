@@ -632,6 +632,74 @@ document.addEventListener("keydown", function (event) {
   }
 });
 
+let botaoSelecionado = null;
+
+document.addEventListener("keydown", function (event) {
+  if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+
+  const todasColunas = document.querySelectorAll('.coluna');
+  const botoesTodos = Array.from(document.querySelectorAll('.coluna button')).filter(btn => !btn.disabled);
+
+  if (!botoesTodos.length) return;
+
+  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+    event.preventDefault();
+
+    if (!botaoSelecionado) {
+      botaoSelecionado = botoesTodos[0];
+      botaoSelecionado.focus();
+      return;
+    }
+
+    const coluna = botaoSelecionado.closest('.coluna');
+    const botoesNaColuna = Array.from(coluna.querySelectorAll('button')).filter(btn => !btn.disabled);
+    const indexAtual = botoesNaColuna.indexOf(botaoSelecionado);
+
+    if (event.key === 'ArrowDown' && indexAtual < botoesNaColuna.length - 1) {
+      botaoSelecionado = botoesNaColuna[indexAtual + 1];
+      botaoSelecionado.focus();
+    } else if (event.key === 'ArrowUp' && indexAtual > 0) {
+      botaoSelecionado = botoesNaColuna[indexAtual - 1];
+      botaoSelecionado.focus();
+    }
+  }
+
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+    event.preventDefault();
+
+    if (!botaoSelecionado) {
+      botaoSelecionado = botoesTodos[0];
+      botaoSelecionado.focus();
+      return;
+    }
+
+    const colunaAtual = botaoSelecionado.closest('.coluna');
+    const colunas = Array.from(document.querySelectorAll('.coluna'));
+    const indexColuna = colunas.indexOf(colunaAtual);
+
+    const novaColuna = event.key === 'ArrowRight'
+      ? colunas[indexColuna + 1]
+      : colunas[indexColuna - 1];
+
+    if (novaColuna) {
+      const textoSenha = botaoSelecionado.textContent.match(/Senha \d+/);
+      const botaoMesmoNumero = Array.from(novaColuna.querySelectorAll('button')).find(b =>
+        b.textContent.includes(textoSenha)
+      );
+      if (botaoMesmoNumero) {
+        botaoSelecionado = botaoMesmoNumero;
+        botaoSelecionado.focus();
+      }
+    }
+  }
+
+  // Enter para clicar no botão
+  if (event.key === 'Enter' && botaoSelecionado) {
+    botaoSelecionado.click();
+  }
+});
+
+
 function esperarSegundoKey(tipo) {
   function segundaLetra(e) {
     const k = e.key;
