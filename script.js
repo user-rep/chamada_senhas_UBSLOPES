@@ -53,7 +53,6 @@ firebase.database().ref('ultimaSenhaChamada').on('value', (snapshot) => {
   if (!data) return;
 
   aplicarDestaqueSenha(data);
-	atualizarCaixasUltimaSenha(data);
 });
 
 function atualizarCaixasUltimaSenha(data) {
@@ -368,6 +367,16 @@ function obterColunaSincronizada(idColuna) {
   if (idColuna === 'coluna-preferencial-guiche2') return 'coluna-preferencial-guiche1';
   return null;
 }
+
+function registrarChamadaFirebase(idColuna, numeroSenha, classeDestaque) {
+  firebase.database().ref('ultimaSenhaChamada').set({
+    idColuna,
+    numeroSenha,
+    classeDestaque,
+    timestamp: Date.now()
+  });
+}
+
 
 for (let i = 1; i <= 999; i++) {
   const numero = i.toString().padStart(1, '0');
