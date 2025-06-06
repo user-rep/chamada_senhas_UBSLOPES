@@ -622,7 +622,8 @@ document.addEventListener("keydown", function (event) {
     return;
   }
 
-  if (tecla === 'r') {
+  if (tecla === 'r' || event.code === 'Space') {
+    event.preventDefault(); // evita rolagem da página com espaço
     repetirUltimaSenha();
   } else if (tecla === 'n') {
     esperarSegundoKey('n');
