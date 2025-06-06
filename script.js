@@ -1,3 +1,6 @@
+let ultimaSenhaChamada = null;
+let ultimaSenhaChamadaIdColuna = null;
+
 function aplicarDestaqueSenha(data) {
   const { idColuna, numeroSenha, classeDestaque } = data;
 
@@ -353,6 +356,8 @@ botao.onclick = () => {
   });
 
   ultimaSenhaChamada = botao;
+  ultimaSenhaChamadaIdColuna = idColuna;
+
 };
 
 
@@ -600,10 +605,10 @@ function chamarSenhaLocal(tipo) {
 }
 
 function repetirUltimaSenha() {
-  if (!ultimaSenhaChamada) return;
+  if (!ultimaSenhaChamada || !ultimaSenhaChamadaIdColuna) return;
 
   const texto = ultimaSenhaChamada.textContent;
-  const isPreferencial = ultimaSenhaChamada.classList.contains('botao-vermelho');
+  const isPreferencial = ultimaSenhaChamadaIdColuna.includes("preferencial");
   const numeroSenha = parseInt(texto.match(/Senha (\d+)/)?.[1], 10);
   const destino = texto.split(" - ")[1];
 
