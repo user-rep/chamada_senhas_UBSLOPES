@@ -1,7 +1,3 @@
-const ultimosBotoesPorColuna = {};
-const maioresSenhasPorColuna = {};
-let paginaCarregando = true;
-
 function aplicarDestaqueSenha(data) {
   const { idColuna, numeroSenha, classeDestaque } = data;
 
@@ -28,11 +24,7 @@ botoes.forEach(btn => {
 
   if (botaoMaior) {
     setTimeout(() => {
-      if (!paginaCarregando) {
-        setTimeout(() => {
-          botaoMaior.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 200);
-      }
+      botaoMaior.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 200);
   }
 
@@ -61,20 +53,18 @@ botoesOutro.forEach(btn => {
 
       if (botaoMaiorOutro) {
         setTimeout(() => {
-          if (!paginaCarregando) {
-          setTimeout(() => {
-            botaoMaiorOutro.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }, 200);
-        }
+          botaoMaiorOutro.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 200);
       }
     }
   }
 
-  // Atualiza os boxes SOMENTE se não estiver carregando a página
-  if (!paginaCarregando && textoSenha) {
-    if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(textoSenha);
-    else atualizarUltimaSenhaNormal(textoSenha);
+  // Atualiza os campos "Última Senha"
+  const texto = Array.from(coluna.querySelectorAll('button'))
+    .find(btn => btn.textContent.includes(`Senha ${numeroSenha} -`))?.textContent;
+  if (texto) {
+    if (idColuna.includes("preferencial")) atualizarUltimaSenhaPreferencial(texto);
+    else atualizarUltimaSenhaNormal(texto);
   }
 }
 
@@ -82,11 +72,9 @@ botoesOutro.forEach(btn => {
 firebase.database().ref('ultimaSenhaChamada').on('value', (snapshot) => {
   const data = snapshot.val();
   if (!data) return;
-  aplicarDestaqueSenha(data);
-  atualizarCaixasUltimaSenha(data);
+
   aplicarDestaqueSenha(data);
 });
-
 
 function atualizarCaixasUltimaSenha(data) {
   const { idColuna, textoSenha } = data;
@@ -263,7 +251,8 @@ function atualizarUltimaSenhaPreferencial(texto) {
   }
 }
 
-
+const ultimosBotoesPorColuna = {};
+const maioresSenhasPorColuna = {};
 
 function criarBotao(idColuna, texto, classe) {
   const coluna = document.getElementById(idColuna);
@@ -410,7 +399,6 @@ function registrarChamadaFirebase(idColuna, numeroSenha, classeDestaque) {
     idColuna,
     numeroSenha,
     classeDestaque,
-    textoSenha,
     timestamp: Date.now()
   });
 }
@@ -521,9 +509,6 @@ window.speechSynthesis.onvoiceschanged = () => {
 };
 
 document.addEventListener("DOMContentLoaded", async function () {
-  atualizarUltimaSenhaNormal("");
-  atualizarUltimaSenhaPreferencial("");
-
   forcarSelecaoGuiche();
   const confirmar = confirm("Deseja reiniciar a contagem de senhas?");
   if (confirmar) {
@@ -531,7 +516,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   } else {
     await restaurarEstadoSenhasFirebase();
   }
-    paginaCarregando = false;
 });
 
 function forcarSelecaoGuiche() {
