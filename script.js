@@ -1,4 +1,3 @@
-
 function aplicarDestaqueSenha(data) {
   const { idColuna, numeroSenha, classeDestaque } = data;
 
@@ -354,9 +353,6 @@ botao.onclick = () => {
   });
 
   ultimaSenhaChamada = botao;
-  ultimaSenhaChamadaIdColuna = idColuna;
-
-
 };
 
 
@@ -602,6 +598,7 @@ function chamarSenhaLocal(tipo) {
     console.error('Botão não encontrado:', `Senha ${contadorLocal[tipo]} - ${guiche}`);
   }
 }
+
 
 function repetirUltimaSenha() {
   if (!ultimaSenhaChamada) return;
