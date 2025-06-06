@@ -1,6 +1,3 @@
-let ultimaSenhaChamada = null;
-let ultimaSenhaChamadaIdColuna = null;
-
 function aplicarDestaqueSenha(data) {
   const { idColuna, numeroSenha, classeDestaque } = data;
 
@@ -356,9 +353,6 @@ botao.onclick = () => {
   });
 
   ultimaSenhaChamada = botao;
-  ultimaSenhaChamadaIdColuna = idColuna;
-
-
 };
 
 
@@ -577,9 +571,12 @@ async function chamarSenhaSincronizada(tipo, guiche) {
 
   if (botao) {
     botao.click();
-	ultimaSenhaChamada = botao;
-  ultimaSenhaChamadaIdColuna = idColuna;
-}
+	firebase.database().ref('ultimaSenhaChamada').set({
+  idColuna: idColuna,
+  numeroSenha: numeroSenha,
+  classeDestaque: classeDestaque,
+  timestamp: Date.now()
+});
 
   } else {
     console.error('Botão não encontrado:', `Senha ${contador} - Guichê ${guiche}`);
@@ -602,13 +599,17 @@ function chamarSenhaLocal(tipo) {
   }
 }
 
+
 function repetirUltimaSenha() {
-  if (!ultimaSenhaChamada || !ultimaSenhaChamadaIdColuna) return;
+  if (!ultimaSenhaChamada) return;
 
   const texto = ultimaSenhaChamada.textContent;
-  const isPreferencial = ultimaSenhaChamadaIdColuna.includes("preferencial");
   const numeroSenha = parseInt(texto.match(/Senha (\d+)/)?.[1], 10);
   const destino = texto.split(" - ")[1];
+
+  // Verifica diretamente a qual coluna o botão pertence
+  const coluna = ultimaSenhaChamada.closest(".coluna");
+  const isPreferencial = coluna?.id?.includes("preferencial");
 
   const textoFalado = isPreferencial
     ? `Senha ${numeroSenha}, preferencial, ${destino}`
@@ -616,6 +617,7 @@ function repetirUltimaSenha() {
 
   falar(textoFalado);
 }
+
 
 let enterPressionadoRecentemente = false;
 
