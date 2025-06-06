@@ -388,6 +388,101 @@ window.speechSynthesis.onvoiceschanged = () => {
 
 document.addEventListener("DOMContentLoaded", async function () {
 	
+	function criarBotao(idColuna, texto, classe) {
+  const coluna = document.getElementById(idColuna);
+  const botao = document.createElement('button');
+  botao.textContent = texto;
+  botao.className = classe;
+
+  const isPreferencial = idColuna.includes("preferencial");
+  const numeroSenha = parseInt(texto.match(/Senha (\d+)/)[1], 10);
+  const destino = texto.split(" - ")[1];
+  const textoFalado = isPreferencial
+    ? `Senha ${numeroSenha}, preferencial, ${destino}`
+    : `Senha ${numeroSenha}, normal, ${destino}`;
+
+  botao.onclick = () => {
+	  
+	  salvarUltimaSenhaFirebase(idColuna, numeroSenha);
+
+    const colunaSincronizadaID = obterColunaSincronizada(idColuna);
+    if (colunaSincronizadaID) {
+        salvarUltimaSenhaFirebase(colunaSincronizadaID, numeroSenha);
+    }
+	
+    falar(textoFalado);
+
+    const agora = new Date();
+    historicoChamadas.push({
+      tipo: isPreferencial ? "Senha Preferencial" : "Senha Normal",
+      senha: texto,
+      guiche: destino,
+      data: agora.toLocaleDateString('pt-BR'),
+      hora: agora.toLocaleTimeString('pt-BR'),
+    });
+
+    if (isPreferencial) {
+      atualizarUltimaSenhaPreferencial(texto);
+    } else {
+      atualizarUltimaSenhaNormal(texto);
+    }
+
+    const botoesNaColuna = Array.from(coluna.querySelectorAll('button'));
+
+    if (!maioresSenhasPorColuna[idColuna] || numeroSenha > maioresSenhasPorColuna[idColuna]) {
+      maioresSenhasPorColuna[idColuna] = numeroSenha;
+      salvarMaiorSenhaFirebase(idColuna, numeroSenha);
+      const tipo = isPreferencial ? 'preferencial' : 'normal';
+      atualizarContadorFirebaseSeMaior(tipo, numeroSenha);
+
+    }
+
+    const limite = maioresSenhasPorColuna[idColuna];
+    const classeDestaque = isPreferencial ? 'botao-destacado-preferencial' : 'botao-destacado-normal';
+
+    botoesNaColuna.forEach(btn => {
+      btn.classList.remove('botao-destacado-normal', 'botao-destacado-preferencial');
+    });
+
+    botoesNaColuna.forEach(btn => {
+      const match = btn.textContent.match(/Senha (\d+)/);
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (num <= limite) {
+          btn.classList.add(classeDestaque);
+        }
+      }
+    });
+
+    const colunaSincronizadaID = obterColunaSincronizada(idColuna);
+    if (colunaSincronizadaID) {
+      const colunaOutro = document.getElementById(colunaSincronizadaID);
+      if (colunaOutro) {
+        const botoesOutro = Array.from(colunaOutro.querySelectorAll('button'));
+        botoesOutro.forEach(btn => {
+          const match = btn.textContent.match(/Senha (\d+)/);
+          if (match) {
+            const num = parseInt(match[1], 10);
+            if (num <= limite) {
+              btn.classList.add(classeDestaque);
+              if (num === numeroSenha) {
+                btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }
+          }
+        });
+      }
+    }
+
+    botao.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    ultimaSenhaChamada = botao;
+
+  };
+
+  coluna.appendChild(botao);
+}
+	
+	
   for (let i = 1; i <= 999; i++) {
   const numero = i.toString().padStart(1, '0');
   criarBotao("coluna-normal-guiche1", `Senha ${numero} - Guichê 1`, 'botao-preto');
