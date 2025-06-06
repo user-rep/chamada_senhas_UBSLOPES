@@ -355,7 +355,6 @@ botao.onclick = () => {
   });
 
   ultimaSenhaChamada = botao;
-  ultimaSenhaChamadaIdColuna = idColuna;
 
 };
 
