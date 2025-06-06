@@ -1,3 +1,5 @@
+const ultimosBotoesPorColuna = {};
+const maioresSenhasPorColuna = {};
 let paginaCarregando = true;
 
 function aplicarDestaqueSenha(data) {
@@ -26,7 +28,11 @@ botoes.forEach(btn => {
 
   if (botaoMaior) {
     setTimeout(() => {
-      botaoMaior.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (!paginaCarregando) {
+        setTimeout(() => {
+          botaoMaior.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 200);
+      }
     }, 200);
   }
 
@@ -55,7 +61,11 @@ botoesOutro.forEach(btn => {
 
       if (botaoMaiorOutro) {
         setTimeout(() => {
-          botaoMaiorOutro.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          if (!paginaCarregando) {
+          setTimeout(() => {
+            botaoMaiorOutro.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 200);
+        }
         }, 200);
       }
     }
@@ -253,8 +263,7 @@ function atualizarUltimaSenhaPreferencial(texto) {
   }
 }
 
-const ultimosBotoesPorColuna = {};
-const maioresSenhasPorColuna = {};
+
 
 function criarBotao(idColuna, texto, classe) {
   const coluna = document.getElementById(idColuna);
@@ -401,6 +410,7 @@ function registrarChamadaFirebase(idColuna, numeroSenha, classeDestaque) {
     idColuna,
     numeroSenha,
     classeDestaque,
+    textoSenha,
     timestamp: Date.now()
   });
 }
