@@ -577,12 +577,9 @@ async function chamarSenhaSincronizada(tipo, guiche) {
 
   if (botao) {
     botao.click();
-	firebase.database().ref('ultimaSenhaChamada').set({
-  idColuna: idColuna,
-  numeroSenha: numeroSenha,
-  classeDestaque: classeDestaque,
-  timestamp: Date.now()
-});
+	ultimaSenhaChamada = botao;
+  ultimaSenhaChamadaIdColuna = idColuna;
+}
 
   } else {
     console.error('Botão não encontrado:', `Senha ${contador} - Guichê ${guiche}`);
