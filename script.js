@@ -641,7 +641,7 @@ function chamarSenhaLocal(tipo) {
 }
 
 
-function repetirUltimaSenha() {
+async function repetirUltimaSenha() {
   if (!ultimaSenhaChamada) return;
 
   const texto = ultimaSenhaChamada.textContent;
@@ -654,7 +654,16 @@ function repetirUltimaSenha() {
     ? `Senha ${numeroSenha}, preferencial, ${destino}`
     : `Senha ${numeroSenha}, normal, ${destino}`;
 
-  falar(textoFalado);
+  // Aguarda exclusividade no Firebase antes de repetir a fala
+  const podeFalar = await tentarReservarLocutor();
+  if (!podeFalar) {
+    console.log("Outro computador está falando. Aguarde...");
+    return;
+  }
+
+  // Fila e processamento seguem normalmente
+  filaDeFalas.push(textoFalado);
+  processarFilaDeFalas();
 }
 
 
