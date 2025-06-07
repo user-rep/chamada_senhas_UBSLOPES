@@ -686,6 +686,7 @@ document.addEventListener("keydown", function (event) {
     esperarSegundoKey('p');
   } else if (tecla === 'enter') {
     if (enterPressionadoRecentemente) return; // Evita repetição
+	      event.preventDefault(); // 🛑 Impede o click automático do navegador
 	      enterPressionadoRecentemente = true;
 setTimeout(() => {
       enterPressionadoRecentemente = false;
