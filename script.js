@@ -184,26 +184,20 @@ const filaDeFalas = [];
 let falandoAgora = false;
 
 async function falar(texto) {
-  const ref = firebase.database().ref('locutorAtivo');
-  const snapshot = await ref.get();
-  const data = snapshot.exists() ? snapshot.val() : { emUso: false, timestamp: 0 };
-  const agora = Date.now();
-
-  // Bloqueia se outro computador está falando e o tempo não expirou (ajuste conforme necessário)
-  if (data.emUso && (agora - data.timestamp < 5000)) {
-    console.log("Outro computador está falando. Aguarde...");
-    return;
-  }
-
-  // Sinaliza que este computador está falando
-  await ref.set({ emUso: true, timestamp: agora });
-
   filaDeFalas.push(texto);
   processarFilaDeFalas();
 }
 
-function processarFilaDeFalas() {
+async function processarFilaDeFalas() {
   if (falandoAgora || filaDeFalas.length === 0) return;
+
+  // Espera até conseguir o "controle de fala"
+  const podeFalar = await tentarReservarLocutor();
+  if (!podeFalar) {
+    console.log("Outro locutor ainda está falando. Tentando novamente em 1s...");
+    setTimeout(processarFilaDeFalas, 1000); // tenta de novo depois de 1s
+    return;
+  }
 
   falandoAgora = true;
   const texto = filaDeFalas.shift();
@@ -235,6 +229,22 @@ function processarFilaDeFalas() {
     synth.speak(msg);
   });
 }
+
+async function tentarReservarLocutor() {
+  const ref = firebase.database().ref('locutorAtivo');
+  const snapshot = await ref.get();
+  const data = snapshot.exists() ? snapshot.val() : { emUso: false, timestamp: 0 };
+  const agora = Date.now();
+
+  if (data.emUso && (agora - data.timestamp < 7000)) {
+    return false;
+  }
+
+  // Ocupa o locutor
+  await ref.set({ emUso: true, timestamp: agora });
+  return true;
+}
+
 
 function chamarNome(guiche) {
   const nome = document.getElementById('nomePessoa').value.trim();
