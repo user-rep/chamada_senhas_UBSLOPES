@@ -1,5 +1,13 @@
 window.speechSynthesis.cancel(); // Cancela qualquer fala travada anterior
 
+function enviarFalaParaFila(texto) {
+  firebase.database().ref('filaDeFalas').push({
+    texto,
+    status: 'pendente',
+    timestamp: Date.now()
+  });
+}
+
 function aplicarDestaqueSenha(data) {
   const { idColuna, numeroSenha, classeDestaque } = data;
 
@@ -111,15 +119,15 @@ async function atualizarContadorFirebaseSeMaior(tipo, numero) {
 }
 
 function falarVacAdulto() {
-  falar("Atenção, para vacinação adulto, tenha em mãos documento com foto");
+  enviarFalaParaFila("Atenção, para vacinação adulto, tenha em mãos documento com foto");
 }
 
 function falarVacInfantil() {
-  falar("Atenção, para vacinação infantil, tenha em mãos caderneta de vacinação");
+  enviarFalaParaFila("Atenção, para vacinação infantil, tenha em mãos caderneta de vacinação");
 }
 
 function falarRetiradaGuias() {
-  falar("Atenção, para retirada de guias, tenha em mãos documento do titular do agendamento");
+  enviarFalaParaFila("Atenção, para retirada de guias, tenha em mãos documento do titular do agendamento");
 }
 
 function voltarAoTopo() {
@@ -183,8 +191,8 @@ function carregarVozes(callback) {
 const filaDeFalas = [];
 let falandoAgora = false;
 
-function falar(texto) {
-  filaDeFalas.push(texto);
+function falar(texto, callback = null) {
+  filaDeFalas.push({ texto, callback });
   processarFilaDeFalas();
 }
 
@@ -192,7 +200,7 @@ function processarFilaDeFalas() {
   if (falandoAgora || filaDeFalas.length === 0) return;
 
   falandoAgora = true;
-  const texto = filaDeFalas.shift();
+  const { texto, callback } = filaDeFalas.shift();
 
   const synth = window.speechSynthesis;
   const msg = new SpeechSynthesisUtterance();
@@ -208,7 +216,10 @@ function processarFilaDeFalas() {
 
     msg.onend = () => {
       falandoAgora = false;
-      setTimeout(processarFilaDeFalas, 100); // dá um pequeno intervalo antes da próxima
+      if (typeof callback === 'function') {
+        callback();
+      }
+      setTimeout(processarFilaDeFalas, 100);
     };
 
     synth.speak(msg);
@@ -248,7 +259,7 @@ function chamarNome(guiche) {
     hora: agora.toLocaleTimeString('pt-BR'),
   });
 
-  falar(mensagem);
+  enviarFalaParaFila(mensagem);
 }
 
 function atualizarUltimaSenhaNormal(texto) {
@@ -283,7 +294,7 @@ function criarBotao(idColuna, texto, classe) {
 
 botao.onclick = () => {
   botao.dataset.tipoSenha = isPreferencial ? "preferencial" : "normal";
-  falar(textoFalado);
+  enviarFalaParaFila(textoFalado);
 
   const agora = new Date();
   historicoChamadas.push({
@@ -623,7 +634,7 @@ function repetirUltimaSenha() {
     ? `Senha ${numeroSenha}, preferencial, ${destino}`
     : `Senha ${numeroSenha}, normal, ${destino}`;
 
-  falar(textoFalado);
+  enviarFalaParaFila(textoFalado);
 }
 
 
@@ -734,4 +745,33 @@ function esperarSegundoKey(tipo) {
   }
 
   document.addEventListener('keydown', segundaLetra);
+}
+
+firebase.database().ref('filaDeFalas').on('child_added', (snapshot) => {
+  const key = snapshot.key;
+  const data = snapshot.val();
+
+  if (data.status === 'pendente') {
+    tentarExecutarFala(key, data.texto);
+  }
+});
+
+function tentarExecutarFala(key, texto) {
+  const ref = firebase.database().ref('filaDeFalas/' + key);
+
+  ref.transaction(fala => {
+    if (fala && fala.status === 'pendente') {
+      fala.status = 'executando';
+      return fala;
+    }
+    return; // já está sendo processada
+  }).then(result => {
+    if (result.committed && result.snapshot.val().status === 'executando') {
+      falar(texto, () => {
+        ref.update({ status: 'concluida' }).then(() => {
+          ref.remove();
+        });
+      });
+    }
+  });
 }
