@@ -747,31 +747,53 @@ function esperarSegundoKey(tipo) {
   document.addEventListener('keydown', segundaLetra);
 }
 
+// Dentro do seu firebase.database().ref('filaDeFalas').on('child_added', ...)
+// Em vez de chamar tentarExecutarFala diretamente, você faria algo como:
+
 firebase.database().ref('filaDeFalas').on('child_added', (snapshot) => {
   const key = snapshot.key;
   const data = snapshot.val();
 
   if (data.status === 'pendente') {
-    tentarExecutarFala(key, data.texto);
+    // Tenta adquirir o bloqueio do locutor
+    firebase.database().ref('currentSpeakerLock').transaction((currentLock) => {
+      if (currentLock === null) {
+        // Ninguém está falando, adquire o bloqueio
+        return { speakerId: firebase.auth().currentUser.uid || 'anon', speechKey: key }; // Ou use um ID de cliente único
+      }
+      // Outra pessoa está falando, não adquire
+      return undefined; // Aborta a transação
+    }).then((result) => {
+      if (result.committed) {
+        // Bloqueio adquirido, agora executa a fala
+        tentarExecutarFala(key, data.texto);
+      } else {
+        // Bloqueio não adquirido, outro cliente está falando.
+        // Você pode querer atualizar o status para 'em_fila' ou semelhante
+        // ou apenas deixar que seja processado pelo locutor ativo.
+        console.log('Outro cliente está falando, enfileirando localmente ou aguardando.');
+      }
+    }).catch((error) => {
+      console.error('Transação falhou:', error);
+    });
   }
 });
 
 function tentarExecutarFala(key, texto) {
   const ref = firebase.database().ref('filaDeFalas/' + key);
 
-  ref.transaction(fala => {
-    if (fala && fala.status === 'pendente') {
-      fala.status = 'executando';
-      return fala;
-    }
-    return; // já está sendo processada
-  }).then(result => {
-    if (result.committed && result.snapshot.val().status === 'executando') {
-      falar(texto, () => {
-        ref.update({ status: 'concluida' }).then(() => {
-          ref.remove();
-        });
-      });
-    }
+  // Lógica existente para reproduzir áudio
+  falar(texto, () => {
+    // Este callback é executado quando a fala termina (msg.onend)
+    ref.update({ status: 'concluído' }); // Marca como concluído
+    // Libera o bloqueio do locutor após a fala
+    firebase.database().ref('currentSpeakerLock').set(null);
   });
+
+  // Atualiza o status para 'em_progresso' imediatamente
+  ref.update({ status: 'em_progresso' });
 }
+
+// Modifique falar e processarFilaDeFalas para garantir que não bloqueiem
+// a UI, mas gerenciem o sinalizador `falandoAgora` por cliente.
+// No entanto, o controle principal deve vir do bloqueio do Firebase.
