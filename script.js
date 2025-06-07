@@ -236,7 +236,7 @@ async function tentarReservarLocutor() {
   const data = snapshot.exists() ? snapshot.val() : { emUso: false, timestamp: 0 };
   const agora = Date.now();
 
-  if (data.emUso && (agora - data.timestamp < 7000)) {
+  if (data.emUso && (agora - data.timestamp < 4000)) {
     return false;
   }
 
