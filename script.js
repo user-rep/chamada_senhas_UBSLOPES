@@ -183,7 +183,21 @@ function carregarVozes(callback) {
 const filaDeFalas = [];
 let falandoAgora = false;
 
-function falar(texto) {
+async function falar(texto) {
+  const ref = firebase.database().ref('locutorAtivo');
+  const snapshot = await ref.get();
+  const data = snapshot.exists() ? snapshot.val() : { emUso: false, timestamp: 0 };
+  const agora = Date.now();
+
+  // Bloqueia se outro computador está falando e o tempo não expirou (ajuste conforme necessário)
+  if (data.emUso && (agora - data.timestamp < 5000)) {
+    console.log("Outro computador está falando. Aguarde...");
+    return;
+  }
+
+  // Sinaliza que este computador está falando
+  await ref.set({ emUso: true, timestamp: agora });
+
   filaDeFalas.push(texto);
   processarFilaDeFalas();
 }
@@ -206,9 +220,16 @@ function processarFilaDeFalas() {
     const voz = vozes.find(v => v.name === vozSelecionada);
     if (voz) msg.voice = voz;
 
-    msg.onend = () => {
+    msg.onend = async () => {
       falandoAgora = false;
-      setTimeout(processarFilaDeFalas, 100); // dá um pequeno intervalo antes da próxima
+
+      // Libera o locutor no Firebase
+      await firebase.database().ref('locutorAtivo').set({
+        emUso: false,
+        timestamp: Date.now()
+      });
+
+      setTimeout(processarFilaDeFalas, 100);
     };
 
     synth.speak(msg);
