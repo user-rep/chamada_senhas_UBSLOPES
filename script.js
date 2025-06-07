@@ -684,24 +684,24 @@ document.addEventListener("keydown", function (event) {
     esperarSegundoKey('n');
   } else if (tecla === 'p') {
     esperarSegundoKey('p');
- else if (tecla === 'enter') {
-  if (enterPressionadoRecentemente || !botaoSelecionado) return;
+  } else if (tecla === 'enter') {
+    if (enterPressionadoRecentemente || !botaoSelecionado) return;
 
-  enterPressionadoRecentemente = true;
-  setTimeout(() => {
-    enterPressionadoRecentemente = false;
-  }, 500);
+    enterPressionadoRecentemente = true;
+    setTimeout(() => {
+      enterPressionadoRecentemente = false;
+    }, 500);
 
-  // Bloqueia clique se outro computador estiver falando
-  tentarReservarLocutor().then(podeFalar => {
-    if (!podeFalar) {
-      console.log("Outro computador está falando. Aguarde...");
-      return;
-    }
+    // Bloqueia clique se outro computador estiver falando
+    tentarReservarLocutor().then(podeFalar => {
+      if (!podeFalar) {
+        console.log("Outro computador está falando. Aguarde...");
+        return;
+      }
 
-    botaoSelecionado.click(); // chama a senha selecionada com fala normal
-  });
-}
+      botaoSelecionado.click(); // chama a senha selecionada com fala
+    });
+  }
 });
 
 let botaoSelecionado = null;
