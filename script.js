@@ -1,3 +1,5 @@
+let ultimaMensagemFalada = "";  // Salva o texto da última fala
+
 window.speechSynthesis.cancel(); // Cancela qualquer fala travada anterior
 
 function aplicarDestaqueSenha(data) {
@@ -184,6 +186,7 @@ const filaDeFalas = [];
 let falandoAgora = false;
 
 async function falar(texto) {
+  ultimaMensagemFalada = texto;
   filaDeFalas.push(texto);
   processarFilaDeFalas();
 }
@@ -641,21 +644,10 @@ function chamarSenhaLocal(tipo) {
 }
 
 
-async function repetirUltimaSenha() {
-  if (!ultimaSenhaChamada) return;
+async function repetirUltimaMensagem() {
+  if (!ultimaMensagemFalada) return;
 
-  const texto = ultimaSenhaChamada.textContent;
-  const tipo = ultimaSenhaChamada.dataset.tipoSenha || "normal";
-
-  const numeroSenha = parseInt(texto.match(/Senha (\d+)/)?.[1], 10);
-  const destino = texto.split(" - ")[1];
-
-  const textoFalado = tipo === "preferencial"
-    ? `Senha ${numeroSenha}, preferencial, ${destino}`
-    : `Senha ${numeroSenha}, normal, ${destino}`;
-
-  // Fila e processamento seguem normalmente
-  filaDeFalas.push(textoFalado);
+  filaDeFalas.push(ultimaMensagemFalada);
   processarFilaDeFalas();
 }
 
@@ -671,8 +663,8 @@ document.addEventListener("keydown", function (event) {
   }
 
   if (tecla === 'r' || event.code === 'Space') {
-    event.preventDefault(); // evita rolagem da página com espaço
-    repetirUltimaSenha();
+  event.preventDefault(); // evita rolagem da página com espaço
+  repetirUltimaMensagem();
   } else if (tecla === 'n') {
     esperarSegundoKey('n');
   } else if (tecla === 'p') {
