@@ -677,22 +677,20 @@ document.addEventListener("keydown", function (event) {
     return;
   }
 
-  else if (tecla === 'enter') {
-  if (enterPressionadoRecentemente || !botaoSelecionado) return;
-
-  event.preventDefault(); // impede comportamento padrão
-  enterPressionadoRecentemente = true;
-
-  // Remover o foco do botão para evitar clique duplo no keyup
-  botaoSelecionado.blur();
-
-  setTimeout(() => {
-    enterPressionadoRecentemente = false;
-  }, 500);
-
-  botaoSelecionado.click(); // chama manualmente
-}
-
+  if (tecla === 'r' || event.code === 'Space') {
+    event.preventDefault(); // evita rolagem da página com espaço
+    repetirUltimaSenha();
+  } else if (tecla === 'n') {
+    esperarSegundoKey('n');
+  } else if (tecla === 'p') {
+    esperarSegundoKey('p');
+  } else if (tecla === 'enter') {
+    if (enterPressionadoRecentemente) return; // Evita repetição
+	      enterPressionadoRecentemente = true;
+setTimeout(() => {
+      enterPressionadoRecentemente = false;
+    }, 500); // 0,5s de bloqueio para evitar duplo acionamento
+  }
 });
 
 let botaoSelecionado = null;
