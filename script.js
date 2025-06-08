@@ -685,11 +685,16 @@ document.addEventListener("keydown", function (event) {
   } else if (tecla === 'p') {
     esperarSegundoKey('p');
   } else if (tecla === 'enter') {
-    if (enterPressionadoRecentemente) return; // Evita repetição
-	      enterPressionadoRecentemente = true;
-setTimeout(() => {
-      enterPressionadoRecentemente = false;
-    }, 500); // 0,5s de bloqueio para evitar duplo acionamento
+    if (enterPressionadoRecentemente || !botaoSelecionado) return;
+
+  event.preventDefault();               // 🛑 Impede o comportamento nativo do Enter
+  botaoSelecionado.blur();             // 🧼 Remove o foco para evitar click duplo
+  enterPressionadoRecentemente = true;
+
+  setTimeout(() => {
+    enterPressionadoRecentemente = false;
+  }, 500);
+  botaoSelecionado.click();            // ✅ Dispara apenas UM click manualmente
   }
 });
 
