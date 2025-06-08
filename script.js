@@ -654,13 +654,6 @@ async function repetirUltimaSenha() {
     ? `Senha ${numeroSenha}, preferencial, ${destino}`
     : `Senha ${numeroSenha}, normal, ${destino}`;
 
-  // Aguarda exclusividade no Firebase antes de repetir a fala
-  const podeFalar = await tentarReservarLocutor();
-  if (!podeFalar) {
-    console.log("Outro computador está falando. Aguarde...");
-    return;
-  }
-
   // Fila e processamento seguem normalmente
   filaDeFalas.push(textoFalado);
   processarFilaDeFalas();
