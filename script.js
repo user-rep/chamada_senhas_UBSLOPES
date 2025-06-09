@@ -658,48 +658,44 @@ document.addEventListener("keydown", function (event) {
   const tecla = event.key.toLowerCase();
   const inputNome = document.getElementById("nomePessoa");
 
-  // Ignora se está digitando no campo de nome
-  if (document.activeElement === inputNome) {
-    return;
-  }
+  if (document.activeElement === inputNome) return;
 
-  // Repetir última mensagem falada
+  // 🔁 Repetir última fala
   if (tecla === 'r' || event.code === 'Space') {
     event.preventDefault();
     repetirUltimaMensagem();
 
-  // Chamar próxima senha normal
+  // 🔢 N + número
   } else if (tecla === 'n') {
     esperarSegundoKey('n');
 
-  // Chamar próxima senha preferencial
+  // 🅿️ P + número
   } else if (tecla === 'p') {
     esperarSegundoKey('p');
 
-  // Acionar botão com Enter
+  // ⏎ Enter ativa o botão em foco
   } else if (tecla === 'enter') {
     if (enterPressionadoRecentemente || !botaoSelecionado) return;
-
     event.preventDefault(); // 🛑 Impede o comportamento nativo do Enter
     botaoSelecionado.blur(); // 🧼 Remove o foco para evitar click duplo
     enterPressionadoRecentemente = true;
-
     setTimeout(() => {
       enterPressionadoRecentemente = false;
     }, 500);
-
     botaoSelecionado.click(); // ✅ Dispara apenas UM click manualmente
 
-  // Navegação com setas
+  // ⬅️➡️⬆️⬇️ navegação simples, linear
   } else if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(tecla)) {
     event.preventDefault();
 
-    const botoesColunas = Array.from(document.querySelectorAll('.coluna button')).filter(btn => !btn.disabled);
-    const botoesExtras = Array.from(document.querySelectorAll('.botao-nome')).filter(btn => !btn.disabled);
-    const todosBotoes = [...botoesExtras, ...botoesColunas];
+    // Todos os botões válidos (nome + colunas)
+    const botoesInputbox = Array.from(document.querySelectorAll('.botao-nome')).filter(b => !b.disabled);
+    const botoesColunas = Array.from(document.querySelectorAll('.coluna button')).filter(b => !b.disabled);
+    const todosBotoes = [...botoesInputbox, ...botoesColunas];
 
     if (!todosBotoes.length) return;
 
+    // Se ainda não há botão selecionado
     if (!botaoSelecionado) {
       botaoSelecionado = todosBotoes[0];
       botaoSelecionado.focus();
@@ -709,9 +705,9 @@ document.addEventListener("keydown", function (event) {
     const indexAtual = todosBotoes.indexOf(botaoSelecionado);
     let novoIndex = indexAtual;
 
-    if (tecla === 'arrowright' || tecla === 'arrowdown') {
+    if (tecla === 'arrowdown' || tecla === 'arrowright') {
       novoIndex = (indexAtual + 1) % todosBotoes.length;
-    } else if (tecla === 'arrowleft' || tecla === 'arrowup') {
+    } else if (tecla === 'arrowup' || tecla === 'arrowleft') {
       novoIndex = (indexAtual - 1 + todosBotoes.length) % todosBotoes.length;
     }
 
@@ -719,6 +715,7 @@ document.addEventListener("keydown", function (event) {
     botaoSelecionado.focus();
   }
 });
+
 
 let botaoSelecionado = null;
 
