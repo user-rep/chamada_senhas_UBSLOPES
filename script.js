@@ -732,10 +732,24 @@ document.addEventListener("keydown", function (event) {
 
     if (novaColuna) {
       const botoesNovaColuna = Array.from(novaColuna.querySelectorAll('button')).filter(b => !b.disabled);
-if (botoesNovaColuna.length > 0) {
-  botaoSelecionado = botoesNovaColuna[0];
-  botaoSelecionado.focus();
-}
+      if (botoesNovaColuna.length > 0) {
+        const posAtual = botaoSelecionado.getBoundingClientRect().top;
+
+        // Encontra o botão com offsetTop mais próximo
+        let botaoMaisProximo = botoesNovaColuna[0];
+        let menorDiferenca = Math.abs(botaoMaisProximo.getBoundingClientRect().top - posAtual);
+
+        botoesNovaColuna.forEach(btn => {
+          const diferenca = Math.abs(btn.getBoundingClientRect().top - posAtual);
+          if (diferenca < menorDiferenca) {
+            menorDiferenca = diferenca;
+            botaoMaisProximo = btn;
+          }
+        });
+
+        botaoSelecionado = botaoMaisProximo;
+        botaoSelecionado.focus({ preventScroll: true }); // impede scroll automático
+      }
     }
   }
 });
