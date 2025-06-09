@@ -658,28 +658,65 @@ document.addEventListener("keydown", function (event) {
   const tecla = event.key.toLowerCase();
   const inputNome = document.getElementById("nomePessoa");
 
+  // Ignora se está digitando no campo de nome
   if (document.activeElement === inputNome) {
     return;
   }
 
+  // Repetir última mensagem falada
   if (tecla === 'r' || event.code === 'Space') {
-  event.preventDefault(); // evita rolagem da página com espaço
-  repetirUltimaMensagem();
+    event.preventDefault();
+    repetirUltimaMensagem();
+
+  // Chamar próxima senha normal
   } else if (tecla === 'n') {
     esperarSegundoKey('n');
+
+  // Chamar próxima senha preferencial
   } else if (tecla === 'p') {
     esperarSegundoKey('p');
+
+  // Acionar botão com Enter
   } else if (tecla === 'enter') {
     if (enterPressionadoRecentemente || !botaoSelecionado) return;
 
-  event.preventDefault();               // 🛑 Impede o comportamento nativo do Enter
-  botaoSelecionado.blur();             // 🧼 Remove o foco para evitar click duplo
-  enterPressionadoRecentemente = true;
+    event.preventDefault(); // 🛑 Impede o comportamento nativo do Enter
+    botaoSelecionado.blur(); // 🧼 Remove o foco para evitar click duplo
+    enterPressionadoRecentemente = true;
 
-  setTimeout(() => {
-    enterPressionadoRecentemente = false;
-  }, 500);
-  botaoSelecionado.click();            // ✅ Dispara apenas UM click manualmente
+    setTimeout(() => {
+      enterPressionadoRecentemente = false;
+    }, 500);
+
+    botaoSelecionado.click(); // ✅ Dispara apenas UM click manualmente
+
+  // Navegação com setas
+  } else if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(tecla)) {
+    event.preventDefault();
+
+    const botoesColunas = Array.from(document.querySelectorAll('.coluna button')).filter(btn => !btn.disabled);
+    const botoesExtras = Array.from(document.querySelectorAll('.botao-nome')).filter(btn => !btn.disabled);
+    const todosBotoes = [...botoesExtras, ...botoesColunas];
+
+    if (!todosBotoes.length) return;
+
+    if (!botaoSelecionado) {
+      botaoSelecionado = todosBotoes[0];
+      botaoSelecionado.focus();
+      return;
+    }
+
+    const indexAtual = todosBotoes.indexOf(botaoSelecionado);
+    let novoIndex = indexAtual;
+
+    if (tecla === 'arrowright' || tecla === 'arrowdown') {
+      novoIndex = (indexAtual + 1) % todosBotoes.length;
+    } else if (tecla === 'arrowleft' || tecla === 'arrowup') {
+      novoIndex = (indexAtual - 1 + todosBotoes.length) % todosBotoes.length;
+    }
+
+    botaoSelecionado = todosBotoes[novoIndex];
+    botaoSelecionado.focus();
   }
 });
 
