@@ -689,10 +689,7 @@ document.addEventListener("keydown", function (event) {
   if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
 
   const todasColunas = document.querySelectorAll('.coluna');
-  const botoesColunas = Array.from(document.querySelectorAll('.coluna button')).filter(btn => !btn.disabled);
-  const botoesExtras = Array.from(document.querySelectorAll('.botoes-chamada button')).filter(btn => !btn.disabled);
-  const botoesTodos = [...botoesExtras, ...botoesColunas];
-
+  const botoesTodos = Array.from(document.querySelectorAll('.coluna button')).filter(btn => !btn.disabled);
 
   if (!botoesTodos.length) return;
 
