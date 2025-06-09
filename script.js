@@ -658,28 +658,26 @@ document.addEventListener("keydown", function (event) {
   const tecla = event.key.toLowerCase();
   const inputNome = document.getElementById("nomePessoa");
 
-  if (document.activeElement === inputNome) {
-    return;
-  }
+  if (document.activeElement === inputNome) return;
 
   if (tecla === 'r' || event.code === 'Space') {
-  event.preventDefault(); // evita rolagem da página com espaço
-  repetirUltimaMensagem();
+    event.preventDefault();
+    repetirUltimaMensagem();
   } else if (tecla === 'n') {
     esperarSegundoKey('n');
   } else if (tecla === 'p') {
     esperarSegundoKey('p');
   } else if (tecla === 'enter') {
-    if (enterPressionadoRecentemente || !botaoSelecionado) return;
+    if (enterPressionadoRecentemente) return;
 
-  event.preventDefault();               // 🛑 Impede o comportamento nativo do Enter
-  botaoSelecionado.blur();             // 🧼 Remove o foco para evitar click duplo
-  enterPressionadoRecentemente = true;
-
-  setTimeout(() => {
-    enterPressionadoRecentemente = false;
-  }, 500);
-  botaoSelecionado.click();            // ✅ Dispara apenas UM click manualmente
+    const ativo = document.activeElement;
+    if (ativo && ativo.tagName === 'BUTTON' && !ativo.disabled) {
+      event.preventDefault(); // 🛑 Impede o comportamento nativo do Enter
+      ativo.blur(); // 🧼 Remove o foco para evitar click duplo
+      enterPressionadoRecentemente = true;
+      setTimeout(() => enterPressionadoRecentemente = false, 500);
+      ativo.click(); // ✅ Dispara apenas UM click manualmente
+    }
   }
 });
 
@@ -733,14 +731,11 @@ document.addEventListener("keydown", function (event) {
       : colunas[indexColuna - 1];
 
     if (novaColuna) {
-      const textoSenha = botaoSelecionado.textContent.match(/Senha \d+/);
-      const botaoMesmoNumero = Array.from(novaColuna.querySelectorAll('button')).find(b =>
-        b.textContent.includes(textoSenha)
-      );
-      if (botaoMesmoNumero) {
-        botaoSelecionado = botaoMesmoNumero;
-        botaoSelecionado.focus();
-      }
+      const botoesNovaColuna = Array.from(novaColuna.querySelectorAll('button')).filter(b => !b.disabled);
+if (botoesNovaColuna.length > 0) {
+  botaoSelecionado = botoesNovaColuna[0];
+  botaoSelecionado.focus();
+}
     }
   }
 });
