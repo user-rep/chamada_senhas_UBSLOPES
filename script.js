@@ -660,54 +660,84 @@ document.addEventListener("keydown", function (event) {
 
   if (document.activeElement === inputNome) return;
 
-  // 🔁 Repetir última fala
+  // 🔁 Repetir fala
   if (tecla === 'r' || event.code === 'Space') {
     event.preventDefault();
     repetirUltimaMensagem();
 
-  // 🔢 N + número
+  // Chamar próxima senha normal
   } else if (tecla === 'n') {
     esperarSegundoKey('n');
 
-  // 🅿️ P + número
+  // Chamar próxima senha preferencial
   } else if (tecla === 'p') {
     esperarSegundoKey('p');
 
-  // ⏎ Enter ativa o botão em foco
+  // ⏎ Enter ativa o botão
   } else if (tecla === 'enter') {
     if (enterPressionadoRecentemente || !botaoSelecionado) return;
-    event.preventDefault(); // 🛑 Impede o comportamento nativo do Enter
-    botaoSelecionado.blur(); // 🧼 Remove o foco para evitar click duplo
+    event.preventDefault();
+    botaoSelecionado.blur();
     enterPressionadoRecentemente = true;
     setTimeout(() => {
       enterPressionadoRecentemente = false;
     }, 500);
-    botaoSelecionado.click(); // ✅ Dispara apenas UM click manualmente
+    botaoSelecionado.click();
 
-  // ⬅️➡️⬆️⬇️ navegação simples, linear
+  // Navegação por setas
   } else if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(tecla)) {
     event.preventDefault();
 
-    // Todos os botões válidos (nome + colunas)
     const botoesInputbox = Array.from(document.querySelectorAll('.botao-nome')).filter(b => !b.disabled);
     const botoesColunas = Array.from(document.querySelectorAll('.coluna button')).filter(b => !b.disabled);
     const todosBotoes = [...botoesInputbox, ...botoesColunas];
 
     if (!todosBotoes.length) return;
 
-    // Se ainda não há botão selecionado
+    // Inicializa foco
     if (!botaoSelecionado) {
       botaoSelecionado = todosBotoes[0];
       botaoSelecionado.focus();
       return;
     }
 
-    const indexAtual = todosBotoes.indexOf(botaoSelecionado);
-    let novoIndex = indexAtual;
+    const btnAtual = botaoSelecionado;
+    const indexAtual = todosBotoes.indexOf(btnAtual);
 
-    if (tecla === 'arrowdown' || tecla === 'arrowright') {
+    // ⬆️ Se estiver na senha 1 → ir para botões superiores
+    if (tecla === 'arrowup') {
+      if (btnAtual.closest('.coluna') && btnAtual.textContent.includes('Senha 1')) {
+        botaoSelecionado = botoesInputbox[0] || null;
+        if (botaoSelecionado) botaoSelecionado.focus();
+        return;
+      }
+    }
+
+    // ➡️ ou ⬅️ muda de coluna, sem sincronizar senha
+    if (tecla === 'arrowleft' || tecla === 'arrowright') {
+      const colunas = Array.from(document.querySelectorAll('.coluna'));
+      const colunaAtual = btnAtual.closest('.coluna');
+      const indexColunaAtual = colunas.indexOf(colunaAtual);
+
+      const novaColuna = tecla === 'arrowright'
+        ? colunas[indexColunaAtual + 1]
+        : colunas[indexColunaAtual - 1];
+
+      if (novaColuna) {
+        const botoesNaNovaColuna = Array.from(novaColuna.querySelectorAll('button')).filter(b => !b.disabled);
+        if (botoesNaNovaColuna.length > 0) {
+          botaoSelecionado = botoesNaNovaColuna[0]; // simplesmente pega o primeiro visível
+          botaoSelecionado.focus();
+        }
+        return;
+      }
+    }
+
+    // ⬇️ ou ⬆️ genérico: navega linearmente
+    let novoIndex = indexAtual;
+    if (tecla === 'arrowdown') {
       novoIndex = (indexAtual + 1) % todosBotoes.length;
-    } else if (tecla === 'arrowup' || tecla === 'arrowleft') {
+    } else if (tecla === 'arrowup') {
       novoIndex = (indexAtual - 1 + todosBotoes.length) % todosBotoes.length;
     }
 
